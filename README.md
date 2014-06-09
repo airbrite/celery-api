@@ -129,7 +129,7 @@ fulfillment.created_date | string | Date marked fulfilled (ISO 8601 timestamp).
 fulfillment.courier | string | Courier used (e.g., `ups`, `usps`, `fedex`, `dhl`, `other`).
 fulfillment.number | string | Tracking number.
 **Line Items**|[objects]|
-line_items[].id | string | Line item identifier.
+line_items[].id | string | Line item identifier (uuid).
 line_items[].product_name | string | Product name.
 line_items[].variant_name | string | Variant name.
 line_items[].price | integer | Line_item unit price.
@@ -225,8 +225,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440
             "state": "ca",
             "zip": "94107",
             "country": "us",
-            "phone": "555-555-5555",
-            "email": "first@last.com"
+            "phone": "555-555-5555"
         },
         "most_recent_card": {
             "exp_month": "2",
@@ -237,6 +236,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440
         "line_items":
         [
             {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
                 "product_id": "530e40d428ee4100002bfa78",
                 "quantity": 1,
                 "price": 1000,
@@ -326,7 +326,7 @@ https://api.trycelery.com/v2/orders?created[gte]=1388534400000
 
 ### Update an Order
 
-Warning! Modifying data that is not `buyer` or `shipping_address` may have unintended effects on the order. If you are modifying these objects, please be sure to include 
+Warning! Modifying data that is not `buyer` or `shipping_address` may have unintended effects on the order. If you are modifying these objects, please be sure to include entire object.
 
 ```
 PUT /v2/orders/{id}
@@ -349,26 +349,36 @@ shipping_address.company | string | Shipping address company name.
 shipping_address.line1 | string | Shipping address street address.
 shipping_address.line2 | string | Shiping address building, apartment, unit, etc.
 shipping_address.city | string | Shipping address city.
-shipping_address.state | string | Shipping address state, province, or region.
+shipping_address.state | string | Shipping address state, province, or region. US or CA states should be lowercase.
 shipping_address.zip | string | Shipping address ZIP or postal code.
 shipping_address.country | string | Shipping address 2-letter ISO country code (lowercase).
 shipping_address.phone | string | Shipping address phone number.
 
 ##### Example Request
+This example request updates both the buyer and shipping_address information.
+
 ```
 $ curl -X PUT -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
 -d'
 {
-    "buyer" : {
+    "buyer": {
         "email": "first@last.com",
         "first_name": "First",
-        "last_name": "Last"
+        "last_name": "Last",
         "phone": "555-555-5555"
     },
-    "shipping_address" : {
-        "first_name": ""
-        "last_name": 
+    "shipping_address": {
+        "first_name": "First"
+        "last_name": "Last",
+        "company": "Celery",
+        "line1": "123 Street",
+        "line2": null,
+        "city": "New York",
+        "state": "ny",
+        "zip": "10012",
+        "country": "us",
+        "phone": "555-555-5555"
     }
 }
 ```
@@ -381,41 +391,67 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
         "code": 200
     },
     "data": {
-        "updated": 1393481805634,
-        "updated_date": "2014-02-27T06:16:45.634Z",
         "buyer": {
-            "first_name": "Brian",
-            "last_name": "Nguyen",
-            "name": "Brian Nguyen",
-            "sort_name": "brian nguyen",
-            "email": "bnguyen06@gmail.com",
-            "notes": "I'm excited for this product!"
+            "email": "first@last.com",
+            "first_name": "First",
+            "last_name": "Last",
+            "name": "First Last",
+            "sort_name": "first last",
+            "phone": "555-555-5555"
         },
         "shipping_address": {
-            "first_name": "Brian",
-            "last_name": "Nguyen",
-            "name": "Brian Nguyen",
+            "first_name": "First",
+            "last_name": "Last",
+            "name": "First Last",
             "company": "Celery",
-            "line1": "123 Main Street",
-            "line2": "Unit 101",
-            "city": "San Francisco",
-            "state": "ca",
-            "zip": "94107",
+            "line1": "123 Street",
+            "line2": null,
+            "city": "New York",
+            "state": "ny",
+            "zip": "10012",
             "country": "us",
-            "phone": "555-555-5555",
-            "email": "first@last.com"
+            "phone": "555-555-5555"
         },
-        "most_recent_card": {
-            "exp_month": "2",
-            "exp_year": "2014",
-            "last4": "0341",
-            "type": "visa"
-        },
+        ...
+    }
+}
+```
+
+This example request updates the quantity of a line item. Please be sure to include the entire line_items array, even if updating only one line item; otherwise, you may accidentally delete any others. At minimum, the required line item properties include `id`, `product_id`, `quantity`, and `variant_id` (if applicable).
+
+WARNING: Updating line items may causes order prices (subtotal, taxes, shipping, total) to change.
+
+```
+$ curl -X PUT -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
+-d'
+{
+    "line_items":
+    [
+        {
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "product_id": "530e40d428ee4100002bfa78",
+            "quantity": 2
+        }
+    ]
+}
+```
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        ...,
         "line_items":
         [
             {
+                "id": "550e8400-e29b-41d4-a716-446655440000",
                 "product_id": "530e40d428ee4100002bfa78",
-                "quantity": 1,
+                "quantity": 2,
                 "price": 1000,
                 "weight": 0,
                 "enable_taxes": true,
@@ -425,28 +461,10 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
                 "sku": "KOALA-1"
             }
         ],
-        "adjustments": [],
-        "payments": [],
-        "fulfillments": [],
-        "discount_codes": [],
-        "history": 
-        [
-            {
-                "type": "order_created",
-                "created": 1393476995707,
-                "created_date": "2014-02-27T04:56:35.707Z",
-                "body": "Your order was created."
-            }
-        ],
-        "balance": 1000,
-        "subtotal": 1000,
-        "total": 1000,
-        "paid": 0,
-        "refunded": 0
+        ...
     }
 }
 ```
-
 
 ### Cancel an Order
 
