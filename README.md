@@ -417,6 +417,8 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
 }
 ```
 
+##### Example Request
+
 This example request updates the quantity of a line item. Please be sure to include the entire line_items array, even if updating only one line item; otherwise, you may accidentally delete any others. At minimum, the required line item properties include `id`, `product_id`, `quantity`, and `variant_id` (if applicable).
 
 WARNING: Updating line items may causes order prices (subtotal, taxes, shipping, total) to change.
