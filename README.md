@@ -177,7 +177,7 @@ id | string | **Required**. Unique identifier for the order
 
 ##### Example Request
 ```
-$ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440
 ```
 
@@ -484,7 +484,7 @@ id | string | **Required**. Unique identifier for the order
 ##### Example Request
 ```
 $ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
-https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/cancel
+https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/order_cancel
 ```
 
 ##### Example Response
@@ -532,7 +532,7 @@ id | string | **Required**. Unique identifier for the order
 ##### Example Request
 ```
 $ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
-https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/charge
+https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/payment_charge
 ```
 
 ##### Example Response
@@ -602,7 +602,7 @@ id | string | **Required**. Unique identifier for the order
 ##### Example Request
 ```
 $ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
-https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/refund
+https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/payment_refund
 ```
 
 ##### Example Response
@@ -678,7 +678,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/refund
 This convenience endpoint will mark the fulfillment_status as `fulfilled` and allow you to optionally add `courier` and `number`. This endpoint will trigger email notifications to the buyer (if enabled).
 
 ```
-POST /v2/orders/{id}/fulfillment_fulfill
+POST /v2/orders/{id}/fulfillment_succeed
 ```
 
 ##### Arguments
@@ -692,7 +692,7 @@ number | string | Tracking number.
 ##### Example Request
 ```
 $ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
-https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
+https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed \
 -d'
 {
     "courier" : "ups",
