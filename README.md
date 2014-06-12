@@ -473,7 +473,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
 This will cancel the order. This endpoint will trigger email notifications to the buyer (if enabled).
 
 ```
-POST /v2/orders/{id}/cancel
+POST /v2/orders/{id}/order_cancel
 ```
 ##### Arguments
 
@@ -521,7 +521,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/cancel
 This will capture payment for the order. This endpoint will trigger email notifications to the buyer (if enabled).
 
 ```
-POST /v2/orders/{id}/charge
+POST /v2/orders/{id}/payment_charge
 ```
 ##### Arguments
 
@@ -591,7 +591,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/charge
 This will refund payment for the order. This endpoint will trigger email notifications to the buyer (if enabled).
 
 ```
-POST /v2/orders/{id}/refund
+POST /v2/orders/{id}/payment_refund
 ```
 ##### Arguments
 
@@ -678,7 +678,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/refund
 This convenience endpoint will mark the fulfillment_status as `fulfilled` and allow you to optionally add `courier` and `number`. This endpoint will trigger email notifications to the buyer (if enabled).
 
 ```
-POST /v2/orders/{id}/fulfill
+POST /v2/orders/{id}/fulfillment_fulfill
 ```
 
 ##### Arguments
