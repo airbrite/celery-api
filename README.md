@@ -85,9 +85,9 @@ Attributes | Type | Description
 -----------|------|------------
 id | string | Unique identifier for the order
 user_id | string | Seller unique identifier.
-order_status | string | Possible values: `open`, `closed`, `cancelled`.
+order_status | string | Possible values: `open`, `completed`, `cancelled`.
 payment_status | string | Possible values: `unpaid`, `paid`, `refunded`, `failed`.
-fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`, `ready_to_fulfill`, `failed`.
+fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`, `processing`, `failed`.
 currency | string | 3-letter ISO currency code (lowercase).
 type | string | Possible values: `card`, `paypal_adaptive`, `paypal_adaptive_chained`, `affirm`
 number | string | Human-readable order number.
