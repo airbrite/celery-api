@@ -285,13 +285,20 @@ skip | string | Default is `0`.
 limit | string | A limit on the number of objects to be returned. Default is `50`.
 created | integer | A filter on the list based on object `created` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
 updated | integer | A filter on the list based on object `updated` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
+order_status | string | Possible values: `open`, `completed`, `cancelled`
+payment_status | string | Possible values: `unpaid`, `paid`, `failed`, `refunded`
+fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`
+buyer.name | string | A filter on the list based on buyer name. This filter will perform a regex on the value.
+buyer.email | string | A filter on the list based on buyer email. This filter will perform a regex on the value.
 
 - gt:  Return values where the relevent field is after this timestamp (in ms).
 - gte: Return values where the relevant field is after or equal to this timestamp (in ms).
 - lt:  Return values where the relevant field is before this timestamp (in ms).
 - lte: Return values where the relevant field is before or equal to this timestamp (in ms).
 
-Thus, if I wanted to query for orders created at or after January 1, 2014 12:00 AM UTC, my query string would include `created[gte]=1388534400000`.
+If I wanted to query for orders created at or after January 1, 2014 12:00 AM UTC, my query string would include `created[gte]=1388534400000`.
+
+If I wanted to query for orders from `Brian Nguyen`, my query string would include `buyer.name=Brian+Nguyen`.
 
 ##### Example Request
 ```
