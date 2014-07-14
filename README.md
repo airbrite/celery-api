@@ -498,7 +498,7 @@ PUT /v2/orders/{id}
 
 Attributes | Type | Description
 -----------|------|------------
-id | string | **Required**. Unique identifier for the order.
+_id | string | **Required**. Unique identifier for the order.
 **Buyer** | object |
 buyer.email | string | Buyer's email address.
 buyer.first_name | string | Buyer's first name.
