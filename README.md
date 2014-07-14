@@ -2,16 +2,17 @@
 
 The Celery API is an ecommerce logic and storage engine designed to be an essential tool for any developer.
 
-The API is currently in beta. Please contact [support@trycelery.com](mailto:support@trycelery.com) if you intend to deploy our API in production code.
+The API is currently in beta. Please contact [help@trycelery.com](mailto:help@trycelery.com) if you intend to deploy our API in production code.
 
 Our API is organized around REST and designed to have predictable, resource-oriented URLs, and to use HTTP response codes to indicate API errors. We support cross-origin resource sharing to allow you to interact securely with our API from a client-side web application (though you should remember that you should never expose your secret API key in any public website's client-side code). JSON will be returned in all responses from the API, including errors.
 
-
 ## Menu
+
 * [Getting Started](#getting-started)
-* [Authentication](#authentication)
-* [Errors](#errors)
-* [Pagination](#pagination)
+    * [API Basics](#api-basics)
+    * [Authentication](#authentication)
+    * [Errors](#errors)
+    * [Pagination](#pagination)
 * [Orders Resources](#orders-resource)
     * [Retrieve an Order](#retrieve-an-order)
     * [Retrieve a List of Orders](#retrieve-a-list-of-orders)
@@ -20,6 +21,7 @@ Our API is organized around REST and designed to have predictable, resource-orie
     * [Capture an Order](#capture-an-order)
     * [Refund an Order](#refund-an-order)
     * [Fulfill an Order](#fulfill-an-order)
+* [Webhooks](#webhooks)
 
 ## Getting Started
 
@@ -29,7 +31,11 @@ The base endpoint URL is `https://api.trycelery.com`. Celery is currently on ver
 GET https://api.trycelery.com/v2/orders
 ```
 
-**NOTE**: All POST and PUT requests should be sent with the following header `Content-Type="application/json"`.
+### API Basics
+
+* **All requests must be made over HTTPS.**
+* **Always set required headers.** The API expects requests to be sent with the header `Content-Type` set to `application/json`.
+* **All prices are in cents.** Prices are represented as integers in cents. Thus, an API response of `100` would represent `1.00`.
 
 ### Authentication
 
@@ -47,9 +53,11 @@ Our error responses have the format:
 ```json
 {
     "meta": {
-        "code": 400,
-        "error_message": "User with email already exists.",
-        "error_type": "client_error"
+        "code": 409,
+        "error": {
+           "code": 409,
+           "message": "User with email already exists."
+         }
     },
     "data": "User with email already exists."
 }
@@ -73,7 +81,7 @@ All responses return with a similar structure. Collections returns an array and 
     },
     "data": [
         {
-            ...  
+            ...
         }
     ]
 }
@@ -89,17 +97,20 @@ order_status | string | Possible values: `open`, `completed`, `cancelled`.
 payment_status | string | Possible values: `unpaid`, `paid`, `refunded`, `failed`.
 fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`, `processing`, `failed`.
 currency | string | 3-letter ISO currency code (lowercase).
+notes | string | Seller order notes.
 type | string | Possible values: `card`, `paypal_adaptive`, `paypal_adaptive_chained`, `affirm`
+shipping_method | string | Shipping method for fulfillment partners.
 number | string | Human-readable order number.
+linetotal | integer | Sum of the line item amounts. Amount in cents.
 discount | integer | Discount amount applied to the order. Amount in cents.
-subtotal | integer | Sum of line item amounts less discount. Amount in cents.
+subtotal | integer | Sum of line total less discount. Amount in cents.
 shipping | integer | Shipping cost applied. Amount in cents.
 taxes | integer | Sales tax applied. Amount in cents.
-adjustments | integer | Price adjustments applied. Amount in cents.
+adjustment | integer | Price adjustments applied. Amount in cents.
 total | integer | Total = subtotal + shipping + taxes + adjustments. Amount in cents.
-balance | number | Amount owed to the seller. Amount in cents.
-paid | number | Amount paid to the seller. Amount in cents.
-refunded | number | Amount refunded by the seller. Amount in cents.
+balance | integer | Amount owed to the seller. Amount in cents.
+paid | integer | Amount paid to the seller. Amount in cents.
+refunded | integer | Amount refunded by the seller. Amount in cents.
 created | integer | Unix timestamp in milliseconds.
 created_date | string | ISO 8601 timestamp.
 updated | integer | Unix timestamp in milliseconds.
@@ -111,7 +122,7 @@ buyer.last_name | string | Buyer's last name.
 buyer.name | string | Buyer's combined first and last name.
 buyer.phone | string | Buyer's phone number.
 buyer.notes | string | Buyer notes to the seller.
-**Shipping Address**|object|
+**Shipping Address** |object|
 shipping_address.first_name | string | Shipping address first name.
 shipping_address.last_name | string | Shipping address last name.
 shipping_address.name | string | Shipping address first and last name.
@@ -124,43 +135,84 @@ shipping_address.zip | string | Shipping address ZIP or postal code.
 shipping_address.country | string | Shipping address 2-letter ISO country code (lowercase).
 shipping_address.phone | string | Shipping address phone number.
 **Fulfillment**|object|
-fulfillment.created | string | Date marked fulfilled (Unix timestamp in milliseconds).
+fulfillment.created | integer | Date marked fulfilled (Unix timestamp in milliseconds).
 fulfillment.created_date | string | Date marked fulfilled (ISO 8601 timestamp).
-fulfillment.courier | string | Courier used (e.g., `ups`, `usps`, `fedex`, `dhl`, `other`).
+fulfillment.courier | string | Courier used. Possible values: `ups`, `usps`, `fedex`, `dhl`, `other`.
 fulfillment.number | string | Tracking number.
-**Line Items**|[objects]|
+**Payment Source** |object|
+payment_source.card.name | string | Name on credit/debit card. Stripe only.
+payment_source.card.celery_token | string | Stripe only.
+payment_source.card.exp_month | integer | Expiration month of credit/debit card. Stripe only.
+payment_source.card.exp_year | integer | Expiration year of credit/debit card. Stripe only.
+payment_source.card.last4 | string | Last 4 digits of credit/debit card. Stripe only.
+payment_source.card.type | string | Credit/debit card type.
+payment_source.card.country | string | Country of credit/debit card. Stripe only.
+payment_source.paypal.email | string | Buyer's paypal email address. PayPal only.
+payment_source.paypal.preapproval_key | string | PayPal only.
+payment_source.paypal.pay_key | string | PayPal only.
+payment_source.paypal.redirect_url | string | PayPal only.
+payment_source.paypal.ipn | string | PayPal only.
+payment_source.paypal.ending | integer | Preapproval expiration date (Unix timestamp in milliseconds). PayPal only.
+payment_source.paypal.ending_date | string | Preapproval expiration date (ISO 8601 timestamp). PayPal only.
+payment_source.affirm.checkout_token | string | Affirm only.
+payment_source.affirm.charge_id | string | Affirm only.
+payment_source.airbrite.customer_token | string | Airbrite orders only.
+payment_source.airbrite.card_token | string | Airbrite orders only.
+payment_source.airbrite.fingerprint | string | Airbrite orders only.
+payment_source.airbrite.name | string | Airbrite orders only.
+payment_source.airbrite.exp_month | integer | Airbrite orders only.
+payment_source.airbrite.exp_year | integer | Airbrite orders only.
+payment_source.airbrite.last4 | string | Airbrite orders only.
+payment_source.airbrite.country | string | Airbrite orders only.
+payment_source.airbrite.type | string | Airbrite orders only.
+**Line Items** | [objects]|
 line_items[].id | string | Line item identifier (uuid).
+line_items[].product_id | string | Product id.
 line_items[].product_name | string | Product name.
+line_items[].variant_id | string | Variant id.
 line_items[].variant_name | string | Variant name.
+line_items[].sku | string | Seller defined sku.
+line_items[].celery_sku | string | Celery's internal sku.
 line_items[].price | integer | Line_item unit price.
 line_items[].quantity | integer | Number of units ordered.
 line_items[].weight | integer | Line item unit weight.
-line_items[].enable_taxes | boolean | Whether taxes apply to line_item.
-**Payments**|[objects]|
+line_items[].enable_taxes | boolean | Whether taxes apply to line item.
+**Payments** | [objects]|
 payments[].id | string | Payment identifier.
-payments[].amount | integer | Amount capture.
+payments[].charge_id | string | Gateway identifier for the charge (Stripe and Affirm only).
+payments[].balance_transaction | string | Stripe only.
+payments[].pay_key | string | PayPal only.
+payments[].preapproval_key | string | PayPal only.
+payments[].capture_id | string | Affirm only.
+payments[].transaction_id | string | Affirm only.
+payments[].currency | string | Currency.
+payments[].amount | integer | Amount captured.
 payments[].amount_refunded | integer | Amount refunded.
-payments[].refunded | boolean | Whether payment has been refunded.
-payments[].charge_id | string | Gateway's identifier for charge.
-payments[].gateway | string | Possible values: `stripe`, `papyal`, `affirm`.
-payments[].refunds | [objects] | Listing of refunds for this charge.
 payments[].created | integer | Charge date. Unix timestamp in milliseconds.
 payments[].created_date | string | Charge date. ISO 8601 timestamp.
-**Adjustments**|[objects]|
+payments[].refunded | integer | Refund date. Unix timestamp in milliseconds.
+payments[].refunded_date | string | Refund date. ISO 8601 timestamp.
+payments[].card.name | string | Stripe only.
+payments[].card.last4 | string | Stripe only.
+payments[].card.exp_month | string | Stripe only.
+payments[].card.exp_year | string | Stripe only.
+payments[].card.type | string | Stripe only.
+payments[].card.country | string | Stripe only.
+**Adjustments** | [objects]|
 adjustments[].id | string | Adjustment identifier.
 adjustments[].type | string | Possible values: `flat`.
 adjustments[].reason | string | Reasoning for price adjustment.
 adjustments[].issuer | string | Authorizer of price adjustment.
 adjustments[].amount | number | Amount of price adjustment.
-**Discounts**|[objects]|
+**Discounts** | [objects]|
 discounts[].code | string | Discount code applied.
 discounts[].type: | string | Discount type. Possible values: `flat`, `percent`.
-discounts[].discount | number | Discount amount (5% off means 500 and $10 off means 1000).
-discounts[].product_id | string | Product ID that discount belongs to.
+discounts[].amount | integer | Discount amount (5% off means 500 and $10 off means 1000).
+discounts[].product_id | string | Product id that discount belongs to.
 discounts[].apply | string | Possible values: `once`, `every_time`.
-**History**|[objects]|
-history[].type | string | Possible values: `order_created`, `order_cancelled`, `charge_success` `charge_failed`, `refund_success`, `refund_failed`, `fulfillment_success`.
-history[].body | string | Description of history type.
+**History** | [objects]|
+history[].type | string | [See events](#webhooks).
+history[].body | string | Brief description of history type.
 history[].created | integer | Unix timestamp in milliseconds.
 history[].created_date | string | ISO 8601 timestamp.
 
@@ -189,83 +241,187 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440
         "code": 200
     },
     "data": {
-        "created": 1393476995707,
-        "updated": 1393481805634,
-        "created_date": "2014-02-27T04:56:35.707Z",
-        "updated_date": "2014-02-27T06:16:45.634Z",
-        "user_id": "514a114080feb60200000001",
-        "version": "v2",
-        "_id": "530ec58358b6ee0000f5d440",
-        "number": "101211405",
         "locked": false,
         "order_status": "open",
-        "payment_status": "unpaid",
+        "payment_status": "paid",
         "fulfillment_status": "unfulfilled",
         "currency": "usd",
-        "notes": "",
-        "shipping": 0,
-        "taxes": 0,
+        "notes": null,
+        "type": "card",
+        "number": "101335478",
+        "cancel_url": null,
+        "return_url": null,
+        "shipping_method": null,
+        "deposit": 0,
         "discount": 0,
+        "balance": 0,
+        "subtotal": 1000,
+        "total": 2075,
+        "paid": 2075,
+        "refunded": 0,
+        "adjustment": 0,
+        "shipping": 1000,
+        "taxes": 75,
+        "linetotal": 1000,
+        "fee": 42,
+        "seller": {
+            "_id": "514a114080feb60200000001",
+            "email": null,
+            "name": null,
+            "paypal_email": null
+        },
         "buyer": {
+            "sort_name": "brian nguyen",
+            "email": "brian@trycelery.com",
             "first_name": "Brian",
             "last_name": "Nguyen",
             "name": "Brian Nguyen",
-            "sort_name": "brian nguyen",
-            "email": "bnguyen06@gmail.com",
-            "notes": "I'm excited for this product!"
+            "phone": null,
+            "company": null,
+            "notes": null
         },
         "shipping_address": {
+            "email": "brian@trycelery.com",
             "first_name": "Brian",
             "last_name": "Nguyen",
             "name": "Brian Nguyen",
-            "company": "Celery",
             "line1": "123 Main Street",
             "line2": "Unit 101",
             "city": "San Francisco",
             "state": "ca",
-            "zip": "94107",
+            "zip": "94105",
             "country": "us",
-            "phone": "555-555-5555"
+            "phone": null,
+            "company": null
         },
-        "most_recent_card": {
-            "exp_month": "2",
-            "exp_year": "2014",
-            "last4": "0341",
-            "type": "visa"
+        "billing_address": {
+            "email": null,
+            "first_name": null,
+            "last_name": null,
+            "name": null,
+            "line1": null,
+            "line2": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country": null,
+            "phone": null
         },
-        "line_items":
-        [
+        "fulfillment": {
+            "courier": null,
+            "number": null,
+            "created": null,
+            "created_date": null
+        },
+        "payment_source": {
+            "card": {
+                "name": null,
+                "celery_token": "c31310e652f5a7d7254484668c52686d09cd665414c6d3cae04f92660c3d930cad55a378cfa2c76fcbf8dc0b129a4f0baac0e3794c4485510a36cfbef7461c45dfc1d52d6e03a28d03af86f7ec405577f0d1c7c7a0487ca780003f86b595bca0",
+                "exp_month": 11,
+                "exp_year": 20,
+                "last4": "4242",
+                "country": "us",
+                "type": "visa"
+            },
+            "paypal": {
+                "email": null,
+                "preapproval_key": null,
+                "pay_key": null,
+                "redirect_url": null,
+                "ipn": null,
+                "ending": null,
+                "ending_date": null
+            },
+            "affirm": {
+                "checkout_token": null,
+                "charge_id": null
+            },
+            "airbrite": {
+                "customer_token": null,
+                "card_token": null,
+                "fingerprint": null,
+                "name": null,
+                "exp_month": 0,
+                "exp_year": 0,
+                "last4": null,
+                "country": null,
+                "type": null
+            }
+        },
+        "fees": {
+            "percentage": 0.02,
+            "plan": null
+        },
+        "discount_codes": [],
+        "line_items": [
             {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "product_id": "530e40d428ee4100002bfa78",
-                "quantity": 1,
-                "price": 1000,
-                "weight": 0,
-                "enable_taxes": true,
-                "product_name": "Koala Bears",
+                "id": "0fcfa92c-5214-d4bf-ac41-86f26fb9c9b9",
+                "product_id": "531e0b012cf9766885f781b7",
+                "product_name": "koala 10",
+                "variant_id": null,
                 "variant_name": null,
-                "celery_sku": "530e40d428ee4100002bfa78",
-                "sku": "KOALA-1"
+                "sku": "koala_10",
+                "celery_sku": "531e0b012cf9766885f781b7",
+                "price": 1000,
+                "quantity": 1,
+                "weight": 0.5,
+                "enable_taxes": true
             }
         ],
         "adjustments": [],
-        "payments": [],
-        "fulfillments": [],
-        "discount_codes": [],
-        "history": 
-        [
+        "discounts": [],
+        "payments": [
             {
-                "type": "order_created",
-                "created": 1393476995707,
-                "created_date": "2014-02-27T04:56:35.707Z",
-                "body": "Your order was created."
+                "id": "9969f10f-6c29-4d36-ba84-c60abd4bd7ed",
+                "charge_id": "ch_4OrpNFZKd4NOBz",
+                "balance_transaction": "txn_4Orp4IPXvI0QCc",
+                "pay_key": null,
+                "preapproval_key": null,
+                "capture_id": null,
+                "transaction_id": null,
+                "currency": "usd",
+                "amount": 2075,
+                "amount_refunded": 0,
+                "fee": 132,
+                "paid": true,
+                "captured": true,
+                "created": 1405323722000,
+                "created_date": "2014-07-14T07:42:02.000Z",
+                "refunded": null,
+                "refunded_date": null,
+                "card": {
+                    "name": "",
+                    "last4": "4242",
+                    "exp_month": null,
+                    "exp_year": null,
+                    "type": "visa",
+                    "country": "us"
+                }
             }
         ],
-        "balance": 1000,
-        "subtotal": 1000,
-        "total": 1000,
-        "paid": 0,
-        "refunded": 0
+        "fulfillments": [],
+        "history": [
+            {
+                "type": "order.created",
+                "body": "Order was created.",
+                "created": 1405323703464,
+                "created_date": "2014-07-14T07:41:43.464Z"
+            },
+            {
+                "type": "order.charge.succeeded",
+                "body": "Order was charged.",
+                "created": 1405323723032,
+                "created_date": "2014-07-14T07:42:03.032Z"
+            }
+        ],
+        "_id": "53c389b7eba65a000061e12f",
+        "user_id": "514a114080feb60200000001",
+        "version": "v2",
+        "created": 1405323701278,
+        "updated": 1405323722893,
+        "created_date": "2014-07-14T07:41:41.278Z",
+        "updated_date": "2014-07-14T07:42:02.893Z",
+        "metadata": {}
     }
 }
 ```
@@ -285,9 +441,9 @@ skip | string | Default is `0`.
 limit | string | A limit on the number of objects to be returned. Default is `50`.
 created | integer | A filter on the list based on object `created` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
 updated | integer | A filter on the list based on object `updated` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
-order_status | string | Possible values: `open`, `completed`, `cancelled`
-payment_status | string | Possible values: `unpaid`, `paid`, `failed`, `refunded`
-fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`
+order_status | string | Possible values: `open`, `completed`, `cancelled`.
+payment_status | string | Possible values: `unpaid`, `paid`, `failed`, `refunded`.
+fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`, `procesing`, `failed`.
 buyer.name | string | A filter on the list based on buyer name. This filter will perform a regex on the value.
 buyer.email | string | A filter on the list based on buyer email. This filter will perform a regex on the value.
 
@@ -298,7 +454,7 @@ buyer.email | string | A filter on the list based on buyer email. This filter wi
 
 If I wanted to query for orders created at or after January 1, 2014 12:00 AM UTC, my query string would include `created[gte]=1388534400000`.
 
-If I wanted to query for orders from `Brian Nguyen`, my query string would include `buyer.name=Brian+Nguyen`.
+If I wanted to query for orders purchased by `Brian Nguyen`, my query string would include `buyer.name=Brian+Nguyen`.
 
 ##### Example Request
 ```
@@ -319,7 +475,7 @@ https://api.trycelery.com/v2/orders?created[gte]=1388534400000
             "has_more": false
         }
     },
-    "data":
+    "data": 
     [
         {
             ...
@@ -333,7 +489,7 @@ https://api.trycelery.com/v2/orders?created[gte]=1388534400000
 
 ### Update an Order
 
-Warning! Modifying data that is not `buyer` or `shipping_address` may have unintended effects on the order. If you are modifying these objects, please be sure to include entire object.
+Warning! Modifying data that is not `buyer`, `shipping_address`, or `line items` may have unintended effects on the order. If you are modifying these objects, please be sure to include entire object.
 
 ```
 PUT /v2/orders/{id}
@@ -343,23 +499,28 @@ PUT /v2/orders/{id}
 Attributes | Type | Description
 -----------|------|------------
 id | string | **Required**. Unique identifier for the order.
-**Buyer**|object|
+**Buyer** | object |
 buyer.email | string | Buyer's email address.
 buyer.first_name | string | Buyer's first name.
 buyer.last_name | string | Buyer's last name.
 buyer.phone | string | Buyer's phone number.
 buyer.notes | string | Buyer notes to the seller.
-**Shipping Address**|object|
+**Shipping Address** | object |
 shipping_address.first_name | string | Shipping address first name.
 shipping_address.last_name | string | Shipping address last name.
 shipping_address.company | string | Shipping address company name.
 shipping_address.line1 | string | Shipping address street address.
 shipping_address.line2 | string | Shiping address building, apartment, unit, etc.
 shipping_address.city | string | Shipping address city.
-shipping_address.state | string | Shipping address state, province, or region. US or CA states should be lowercase.
+shipping_address.state | string | Shipping address state, province, or region. US or CA states should use their 2-letter ISO state code and be lowercase.
 shipping_address.zip | string | Shipping address ZIP or postal code.
 shipping_address.country | string | Shipping address 2-letter ISO country code (lowercase).
 shipping_address.phone | string | Shipping address phone number.
+**Line Items** | [object] |
+line_items[].id | string | Line item identifier (uuid).
+line_items[].product_id | string | Product id.
+line_items[].variant_id | string | Variant id.
+line_items[].quantity | integer | Number of units ordered.
 
 ##### Example Request
 This example request updates both the buyer and shipping_address information.
@@ -426,9 +587,9 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
 
 ##### Example Request
 
-This example request updates the quantity of a line item. Please be sure to include the entire line_items array, even if updating only one line item; otherwise, you may accidentally delete any others. At minimum, the required line item properties include `id`, `product_id`, `quantity`, and `variant_id` (if applicable).
+This example request updates the quantity of a line item to 2 units. Please be sure to include the entire line_items array, even if updating only one line item; otherwise, you may accidentally delete any others. At minimum, the required line item properties include `id`, `product_id`, `quantity`, and `variant_id` (if applicable).
 
-WARNING: Updating line items may causes order prices (subtotal, taxes, shipping, total) to change.
+WARNING: Updating line items will fetch the latest product details and may cause order prices (subtotal, taxes, shipping, total, balance) to change.
 
 ```
 $ curl -X PUT -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
@@ -466,6 +627,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
                 "enable_taxes": true,
                 "product_name": "Koala Bears",
                 "variant_name": null,
+                "variant_id": null,
                 "celery_sku": "530e40d428ee4100002bfa78",
                 "sku": "KOALA-1"
             }
@@ -482,6 +644,7 @@ This will cancel the order. This endpoint will trigger email notifications to th
 ```
 POST /v2/orders/{id}/order_cancel
 ```
+
 ##### Arguments
 
 Attributes | Type | Description
@@ -530,6 +693,7 @@ This will capture payment for the order. This endpoint will trigger email notifi
 ```
 POST /v2/orders/{id}/payment_charge
 ```
+
 ##### Arguments
 
 Attributes | Type | Description
@@ -537,12 +701,14 @@ Attributes | Type | Description
 id | string | **Required**. Unique identifier for the order
 
 ##### Example Request
+
 ```
 $ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/payment_charge
 ```
 
 ##### Example Response
+
 ```json
 {
     "meta": {
@@ -600,6 +766,7 @@ This will refund payment for the order. This endpoint will trigger email notific
 ```
 POST /v2/orders/{id}/payment_refund
 ```
+
 ##### Arguments
 
 Attributes | Type | Description
@@ -697,6 +864,7 @@ courier | string | Courier that will fulfill order. Possible values: `ups`, `usp
 number | string | Tracking number.
 
 ##### Example Request
+
 ```
 $ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed \
@@ -708,6 +876,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
 ```
 
 ##### Example Response
+
 ```json
 {
     "meta": {
@@ -744,3 +913,27 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
     }
 }
 ```
+
+## Webhooks
+
+Events are our way of letting you know about something interesting has happened with your order. The Celery API can send events directly to your server using webhooks. Webhooks are managed in your account settings.
+
+This is a list of all the types of events we currently send. We may add more at any time, so you shouldn't rely on only these types existing in your code.
+
+* order.created
+* order.completed
+* order.cancelled
+* order.line_items.updated
+* order.shipping_address.updated
+* order.adjustments.updated
+* order.payment_source.updated
+* order.charge.succeeded
+* order.charge.failed
+* order.refund.succeeded
+* order.refund.failed
+* order.fulfillment.succeeded
+* order.fulfillment.processing
+* order.fulfillment.failed
+* buyer.order.cancelled
+* buyer.order.shipping_address.updated
+* buyer.order.payment_source.updated
