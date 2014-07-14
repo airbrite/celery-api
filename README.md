@@ -942,3 +942,13 @@ This is a list of all the types of events we currently send. We may add more at 
 * buyer.order.cancelled
 * buyer.order.shipping_address.updated
 * buyer.order.payment_source.updated
+
+##### Example Response
+
+```json
+{
+    "type": "order.created",
+    "data": {
+        ...
+    }
+}
