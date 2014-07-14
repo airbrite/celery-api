@@ -471,8 +471,7 @@ https://api.trycelery.com/v2/orders?created[gte]=1388534400000
             "has_more": false
         }
     },
-    "data": 
-    [
+    "data": [
         {
             ...
         },
@@ -612,8 +611,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
     },
     "data": {
         ...,
-        "line_items":
-        [
+        "line_items": [
             {
                 "id": "550e8400-e29b-41d4-a716-446655440000",
                 "product_id": "530e40d428ee4100002bfa78",
@@ -661,8 +659,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/order_cancel
     },
     "data": {
         "order_status": "cancelled",
-        "history": 
-        [
+        "history": [
             {
                 "type": "order.created",
                 "created": 1393476995707,
@@ -819,8 +816,7 @@ https://api.trycelery.com/v2/orders/53c389b7eba65a000061e12f/payment_refund
                 }
             }
         ],
-        "history": 
-        [
+        "history": [
             {
                 "type": "order.created",
                 "created": 1393476995707,
@@ -897,8 +893,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
                 "number": "1zasdfajkfsdljasdf"
             }
         ],
-        "history": 
-        [
+        "history": [
             {
                 "type": "order.created",
                 "created": 1393476995707,
