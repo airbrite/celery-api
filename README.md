@@ -91,12 +91,12 @@ All responses return with a similar structure. Collections returns an array and 
 
 Attributes | Type | Description
 -----------|------|------------
-id | string | Unique identifier for the order
+_id | string | Unique identifier for the order
 user_id | string | Seller unique identifier.
 order_status | string | Possible values: `open`, `completed`, `cancelled`.
 payment_status | string | Possible values: `unpaid`, `paid`, `refunded`, `failed`.
 fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`, `processing`, `failed`.
-currency | string | 3-letter ISO currency code (lowercase).
+currency | string | 3-letter ISO currency code (lowercase). Possible values: `usd`, `cad`, `gbp`, `eur`, `aud`.
 notes | string | Seller order notes.
 type | string | Possible values: `card`, `paypal_adaptive`, `paypal_adaptive_chained`, `affirm`
 shipping_method | string | Shipping method for fulfillment partners.
@@ -668,13 +668,13 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/order_cancel
         "history": 
         [
             {
-                "type": "order_created",
+                "type": "order.created",
                 "created": 1393476995707,
                 "created_date": "2014-02-27T04:56:35.707Z",
                 "body": "Your order was created."
             },
             {
-                "type": "order_cancelled",
+                "type": "order.cancelled",
                 "created": 1401993491000,
                 "created_date": "2014-06-05T06:38:00.000Z",
                 "body": "Your order was cancelled."
@@ -704,7 +704,7 @@ id | string | **Required**. Unique identifier for the order
 
 ```
 $ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
-https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/payment_charge
+https://api.trycelery.com/v2/orders/53c389b7eba65a000061e12f/payment_charge
 ```
 
 ##### Example Response
@@ -716,44 +716,51 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/payment_charge
     },
     "data": {
         "payment_status": "paid",
-        "payments":
-        [
+        "payments": [
             {
-                "id": "647f2cbf-4e86-42de-90b7-7a325a42a80b",
-                "amount": 1000,
+                "id": "9969f10f-6c29-4d36-ba84-c60abd4bd7ed",
+                "charge_id": "ch_4OrpNFZKd4NOBz",
+                "balance_transaction": "txn_4Orp4IPXvI0QCc",
+                "pay_key": null,
+                "preapproval_key": null,
+                "capture_id": null,
+                "transaction_id": null,
+                "currency": "usd",
+                "amount": 2075,
                 "amount_refunded": 0,
-                "refunded": false,
-                "fee": 20,
-                "charge_id": "ch_3yLwBnzD7oqprW",
-                "gateway": "stripe",
-                "refunds": [],
-                "created": 1401993491000,
-                "created_date": "2014-06-05T06:38:00.000Z",
+                "fee": 132,
+                "paid": true,
+                "captured": true,
+                "created": 1405323722000,
+                "created_date": "2014-07-14T07:42:02.000Z",
+                "refunded": null,
+                "refunded_date": null,
                 "card": {
-                    "exp_month": 1,
-                    "exp_year": 2017,
-                    "last4": "0466",
-                    "type": "MasterCard"
+                    "name": "",
+                    "last4": "4242",
+                    "exp_month": null,
+                    "exp_year": null,
+                    "type": "visa",
+                    "country": "us"
                 }
             }
         ],
-        "history": 
-        [
+        "history": [
             {
-                "type": "order_created",
+                "type": "order.created",
                 "created": 1393476995707,
                 "created_date": "2014-02-27T04:56:35.707Z",
                 "body": "Your order was created."
             },
             {
-                "type": "charge_success",
+                "type": "order.charge.succeeded",
                 "created": 1401993491000,
                 "created_date": "2014-06-05T06:38:00.000Z",
-                "body": "Your order was charged 10.00."
+                "body": "Your order was charged 20.75."
             }
         ],
         "balance": 0,
-        "paid": 1000,
+        "paid": 2075,
         ...
     }
 }
@@ -776,7 +783,7 @@ id | string | **Required**. Unique identifier for the order
 ##### Example Request
 ```
 $ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
-https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/payment_refund
+https://api.trycelery.com/v2/orders/53c389b7eba65a000061e12f/payment_refund
 ```
 
 ##### Example Response
@@ -787,60 +794,60 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/payment_refund
     },
     "data": {
         "payment_status": "refunded",
-        "payments":
-        [
+        "payments": [
             {
-                "id": "647f2cbf-4e86-42de-90b7-7a325a42a80b",
-                "amount": 1000,
-                "amount_refunded": 1000,
-                "refunded": true,
-                "fee": 20,
-                "charge_id": "ch_3yLwBnzD7oqprW",
-                "gateway": "stripe",
-                "refunds":
-                [
-                    {
-                        "created": 1401994491000,
-                        "created_date": ...,
-                        "amount": 1000,
-                        "refund_id": null
-                    }
-                ],
-                "created": 1401993491000,
-                "created_date": "2014-06-05T06:38:00.000Z",
+                "id": "9969f10f-6c29-4d36-ba84-c60abd4bd7ed",
+                "charge_id": "ch_4OrpNFZKd4NOBz",
+                "balance_transaction": "txn_4Orp4IPXvI0QCc",
+                "pay_key": null,
+                "preapproval_key": null,
+                "capture_id": null,
+                "transaction_id": null,
+                "currency": "usd",
+                "amount": 2075,
+                "amount_refunded": 2075,
+                "fee": 132,
+                "paid": true,
+                "captured": true,
+                "created": 1405323722000,
+                "created_date": "2014-07-14T07:42:02.000Z",
+                "refunded": 1405377769000,
+                "refunded_date": "2014-07-14T22:42:49.000Z",
                 "card": {
-                    "exp_month": 1,
-                    "exp_year": 2017,
-                    "last4": "0466",
-                    "type": "MasterCard"
+                    "name": "",
+                    "last4": "4242",
+                    "exp_month": null,
+                    "exp_year": null,
+                    "type": "visa",
+                    "country": "us"
                 }
             }
         ],
         "history": 
         [
             {
-                "type": "order_created",
+                "type": "order.created",
                 "created": 1393476995707,
                 "created_date": "2014-02-27T04:56:35.707Z",
                 "body": "Your order was created."
             },
             {
-                "type": "charge_success",
+                "type": "order.charge.succeeded",
                 "created": 1401993491000,
                 "created_date": "2014-06-05T06:38:00.000Z",
-                "body": "Your order was charged 10.00."
+                "body": "Your order was charged 20.75."
             },
             {
-                "type": "refund_success",
+                "type": "order.refund.succeeded",
                 "created": 1401993491000,
                 "created_date": "2014-06-05T06:38:00.000Z",
-                "body": "Your order was refunded 10.00."
+                "body": "Your order was refunded 20.75."
             }
 
         ],
         "balance": 0,
-        "paid": 1000,
-        "refunded": 1000,
+        "paid": 2075,
+        "refunded": 2075,
         ...
     }
 }
@@ -897,13 +904,13 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
         "history": 
         [
             {
-                "type": "order_created",
+                "type": "order.created",
                 "created": 1393476995707,
                 "created_date": "2014-02-27T04:56:35.707Z",
                 "body": "Your order was created."
             },
             {
-                "type": "fulfillment_success",
+                "type": "order.fulfillment.succeeded",
                 "created": 1401993491000,
                 "created_date": "2014-06-05T06:38:00.000Z",
                 "body": "Your order was fulfilled."
@@ -917,6 +924,8 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
 ## Webhooks
 
 Events are our way of letting you know about something interesting has happened with your order. The Celery API can send events directly to your server using webhooks. Webhooks are managed in your account settings.
+
+To acknowledge that you received the webhook without any problem, your server should return a 200 HTTP status code. Any response code outside the 2xx and 3xx range will indicate to Celery that you did not receive the webhook. When a webhook is not received for whatever reason, Celery will continue trying to send the webhook for up to 3 times.
 
 This is a list of all the types of events we currently send. We may add more at any time, so you shouldn't rely on only these types existing in your code.
 
