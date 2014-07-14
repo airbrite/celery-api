@@ -939,9 +939,6 @@ This is a list of all the types of events we currently send. We may add more at 
 * order.fulfillment.succeeded
 * order.fulfillment.processing
 * order.fulfillment.failed
-* buyer.order.cancelled
-* buyer.order.shipping_address.updated
-* buyer.order.payment_source.updated
 
 ##### Example Response
 
