@@ -348,10 +348,6 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440
                 "type": null
             }
         },
-        "fees": {
-            "percentage": 0.02,
-            "plan": null
-        },
         "discount_codes": [],
         "line_items": [
             {
