@@ -179,6 +179,7 @@ line_items[].weight | integer | Line item unit weight.
 line_items[].enable_taxes | boolean | Whether taxes apply to line item.
 **Payments** | [objects]|
 payments[].id | string | Payment identifier.
+payments[].gateway | string | Gateway identifier. Possible values: `stripe`, `affirm`, `paypal`.
 payments[].charge_id | string | Gateway identifier for the charge (Stripe and Affirm only).
 payments[].balance_transaction | string | Stripe only.
 payments[].pay_key | string | PayPal only.
@@ -188,10 +189,11 @@ payments[].transaction_id | string | Affirm only.
 payments[].currency | string | Currency.
 payments[].amount | integer | Amount captured.
 payments[].amount_refunded | integer | Amount refunded.
+payments[].paid | boolean | Whether payment was paid.
+payments[].capture | boolean | Whether payment was captured.
+payments[].refunded | boolean | Whether payment was refunded.
 payments[].created | integer | Charge date. Unix timestamp in milliseconds.
 payments[].created_date | string | Charge date. ISO 8601 timestamp.
-payments[].refunded | integer | Refund date. Unix timestamp in milliseconds.
-payments[].refunded_date | string | Refund date. ISO 8601 timestamp.
 payments[].card.name | string | Stripe only.
 payments[].card.last4 | string | Stripe only.
 payments[].card.exp_month | string | Stripe only.
