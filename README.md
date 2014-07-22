@@ -115,6 +115,10 @@ created | integer | Unix timestamp in milliseconds.
 created_date | string | ISO 8601 timestamp.
 updated | integer | Unix timestamp in milliseconds.
 updated_date | string | ISO 8601 timestamp.
+
+### Buyer
+Attributes | Type | Description
+-----------|------|------------
 **Buyer**|object|
 buyer.email | string | Buyer's email address.
 buyer.first_name | string | Buyer's first name.
@@ -122,6 +126,10 @@ buyer.last_name | string | Buyer's last name.
 buyer.name | string | Buyer's combined first and last name.
 buyer.phone | string | Buyer's phone number.
 buyer.notes | string | Buyer notes to the seller.
+
+### Shipping Address
+Attributes | Type | Description
+-----------|------|------------
 **Shipping Address** |object|
 shipping_address.first_name | string | Shipping address first name.
 shipping_address.last_name | string | Shipping address last name.
@@ -134,11 +142,19 @@ shipping_address.state | string | Shipping address state, province, or region.
 shipping_address.zip | string | Shipping address ZIP or postal code.
 shipping_address.country | string | Shipping address 2-letter ISO country code (lowercase).
 shipping_address.phone | string | Shipping address phone number.
+
+### Fulfillment
+Attributes | Type | Description
+-----------|------|------------
 **Fulfillment**|object|
 fulfillment.created | integer | Date marked fulfilled (Unix timestamp in milliseconds).
 fulfillment.created_date | string | Date marked fulfilled (ISO 8601 timestamp).
 fulfillment.courier | string | Courier used. Possible values: `ups`, `usps`, `fedex`, `dhl`, `other`.
 fulfillment.number | string | Tracking number.
+
+### Payment Source
+Attributes | Type | Description
+-----------|------|------------
 **Payment Source** |object|
 payment_source.card.name | string | Name on credit/debit card. Stripe only.
 payment_source.card.celery_token | string | Stripe only.
@@ -165,6 +181,10 @@ payment_source.airbrite.exp_year | integer | Airbrite orders only.
 payment_source.airbrite.last4 | string | Airbrite orders only.
 payment_source.airbrite.country | string | Airbrite orders only.
 payment_source.airbrite.type | string | Airbrite orders only.
+
+### Line Items
+Attributes | Type | Description
+-----------|------|------------
 **Line Items** | [objects]|
 line_items[].id | string | Line item identifier (uuid).
 line_items[].product_id | string | Product id.
