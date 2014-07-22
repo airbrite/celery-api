@@ -117,6 +117,7 @@ updated | integer | Unix timestamp in milliseconds.
 updated_date | string | ISO 8601 timestamp.
 
 ### Buyer
+Buyer is an **object**
 Attributes | Type | Description
 -----------|------|------------
 **Buyer**|object|
