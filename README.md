@@ -91,14 +91,14 @@ All responses return with a similar structure. Collections returns an array and 
 
 Attributes | Type | Description
 -----------|------|------------
-_id | string | Unique identifier for the order
+_id | string | Unique identifier for the order.
 user_id | string | Seller unique identifier.
 order_status | string | Possible values: `open`, `completed`, `cancelled`.
 payment_status | string | Possible values: `unpaid`, `paid`, `refunded`, `failed`.
 fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`, `processing`, `failed`.
 currency | string | 3-letter ISO currency code (lowercase). Possible values: `usd`, `cad`, `gbp`, `eur`, `aud`.
 notes | string | Seller order notes.
-type | string | Possible values: `card`, `paypal_adaptive`, `paypal_adaptive_chained`, `affirm`
+type | string | Possible values: `card`, `paypal_adaptive`, `paypal_adaptive_chained`, `affirm`.
 shipping_method | string | Shipping method for fulfillment partners.
 number | string | Human-readable order number.
 linetotal | integer | Sum of the line item amounts. Amount in cents.
@@ -190,14 +190,14 @@ payments[].currency | string | Currency.
 payments[].amount | integer | Amount captured.
 payments[].amount_refunded | integer | Amount refunded.
 payments[].paid | boolean | Whether payment was paid.
-payments[].capture | boolean | Whether payment was captured.
+payments[].captured | boolean | Whether payment was captured.
 payments[].refunded | boolean | Whether payment was refunded.
 payments[].created | integer | Charge date. Unix timestamp in milliseconds.
 payments[].created_date | string | Charge date. ISO 8601 timestamp.
 payments[].card.name | string | Stripe only.
 payments[].card.last4 | string | Stripe only.
-payments[].card.exp_month | string | Stripe only.
-payments[].card.exp_year | string | Stripe only.
+payments[].card.exp_month | integer | Stripe only.
+payments[].card.exp_year | integer | Stripe only.
 payments[].card.type | string | Stripe only.
 payments[].card.country | string | Stripe only.
 **Adjustments** | [objects]|
