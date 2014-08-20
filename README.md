@@ -6,6 +6,8 @@ The API is currently in beta. Please contact [help@trycelery.com](mailto:help@tr
 
 Our API is organized around REST and designed to have predictable, resource-oriented URLs, and to use HTTP response codes to indicate API errors. We support cross-origin resource sharing to allow you to interact securely with our API from a client-side web application (though you should remember that you should never expose your secret API key in any public website's client-side code). JSON will be returned in all responses from the API, including errors.
 
+To view `v1` API documentation, go to [https://www.trycelery.com/developer](https://www.trycelery.com/developer).
+
 ## Menu
 
 * [Getting Started](#getting-started)
@@ -14,6 +16,7 @@ Our API is organized around REST and designed to have predictable, resource-orie
     * [Errors](#errors)
     * [Pagination](#pagination)
 * [Orders Resources](#orders-resource)
+    * [Create an Order](#create-an-order)
     * [Retrieve an Order](#retrieve-an-order)
     * [Retrieve a List of Orders](#retrieve-a-list-of-orders)
     * [Update an Order](#update-an-order)
@@ -68,7 +71,7 @@ Our error responses have the format:
 All responses return with a similar structure. Collections returns an array and single objects return an object. Here's an example of a collection response:
 
 ```json
-{ 
+{
     "meta": {
         "code": 200,
         "paging": {
@@ -103,14 +106,15 @@ shipping_method | string | Shipping method for fulfillment partners.
 number | string | Human-readable order number.
 linetotal | integer | Sum of the line item amounts. Amount in cents.
 discount | integer | Discount amount applied to the order. Amount in cents.
-subtotal | integer | Sum of line total less discount. Amount in cents.
+subtotal | integer | Sum of line totals less discount. Amount in cents.
 shipping | integer | Shipping cost applied. Amount in cents.
 taxes | integer | Sales tax applied. Amount in cents.
 adjustment | integer | Price adjustments applied. Amount in cents.
 total | integer | Total = subtotal + shipping + taxes + adjustments. Amount in cents.
 balance | integer | Amount owed to the seller. Amount in cents.
-paid | integer | Amount paid to the seller. Amount in cents.
+paid | integer | Gross amount paid to the seller. Amount in cents.
 refunded | integer | Amount refunded by the seller. Amount in cents.
+fee | integer | Celery application fee. Amount in cents.
 created | integer | Unix timestamp in milliseconds.
 created_date | string | ISO 8601 timestamp.
 updated | integer | Unix timestamp in milliseconds.
@@ -120,6 +124,7 @@ buyer.email | string | Buyer's email address.
 buyer.first_name | string | Buyer's first name.
 buyer.last_name | string | Buyer's last name.
 buyer.name | string | Buyer's combined first and last name.
+buyer.company | string | Buyer's company.
 buyer.phone | string | Buyer's phone number.
 buyer.notes | string | Buyer notes to the seller.
 **Shipping Address** |object|
@@ -139,7 +144,7 @@ fulfillment.created | integer | Date marked fulfilled (Unix timestamp in millise
 fulfillment.created_date | string | Date marked fulfilled (ISO 8601 timestamp).
 fulfillment.courier | string | Courier used. Possible values: `ups`, `usps`, `fedex`, `dhl`, `other`.
 fulfillment.number | string | Tracking number.
-**Payment Source** |object|
+**Payment Source** | object |
 payment_source.card.name | string | Name on credit/debit card. Stripe only.
 payment_source.card.celery_token | string | Stripe only.
 payment_source.card.exp_month | integer | Expiration month of credit/debit card. Stripe only.
@@ -154,6 +159,7 @@ payment_source.paypal.redirect_url | string | PayPal only.
 payment_source.paypal.ipn | string | PayPal only.
 payment_source.paypal.ending | integer | Preapproval expiration date (Unix timestamp in milliseconds). PayPal only.
 payment_source.paypal.ending_date | string | Preapproval expiration date (ISO 8601 timestamp). PayPal only.
+payment_source.paypal.seller_email | string | Seller's PayPal email address. PayPal only.
 payment_source.affirm.checkout_token | string | Affirm only.
 payment_source.affirm.charge_id | string | Affirm only.
 payment_source.airbrite.customer_token | string | Airbrite orders only.
@@ -165,7 +171,11 @@ payment_source.airbrite.exp_year | integer | Airbrite orders only.
 payment_source.airbrite.last4 | string | Airbrite orders only.
 payment_source.airbrite.country | string | Airbrite orders only.
 payment_source.airbrite.type | string | Airbrite orders only.
-**Line Items** | [objects]|
+**Client Details** | object |
+client_details.ip | string | string | Browser IP from Celery checkout.
+client_details.user_agent | string | Browser user agent from Celery checkout.
+client_details.accept_language | string | Browser language from Celery checkout.
+**Line Items** | [objects] |
 line_items[].id | string | Line item identifier (uuid).
 line_items[].product_id | string | Product id.
 line_items[].product_name | string | Product name.
@@ -177,7 +187,7 @@ line_items[].price | integer | Line_item unit price.
 line_items[].quantity | integer | Number of units ordered.
 line_items[].weight | integer | Line item unit weight.
 line_items[].enable_taxes | boolean | Whether taxes apply to line item.
-**Payments** | [objects]|
+**Payments** | [objects] |
 payments[].id | string | Payment identifier.
 payments[].gateway | string | Gateway identifier. Possible values: `stripe`, `affirm`, `paypal`.
 payments[].charge_id | string | Gateway identifier for the charge (Stripe and Affirm only).
@@ -200,23 +210,142 @@ payments[].card.exp_month | integer | Stripe only.
 payments[].card.exp_year | integer | Stripe only.
 payments[].card.type | string | Stripe only.
 payments[].card.country | string | Stripe only.
-**Adjustments** | [objects]|
+**Adjustments** | [objects] |
 adjustments[].id | string | Adjustment identifier.
 adjustments[].type | string | Possible values: `flat`.
 adjustments[].reason | string | Reasoning for price adjustment.
 adjustments[].issuer | string | Authorizer of price adjustment.
 adjustments[].amount | number | Amount of price adjustment.
-**Discounts** | [objects]|
+discount_codes | [strings]| Array of discount codes used.
+**Discounts** | [objects] |
 discounts[].code | string | Discount code applied.
 discounts[].type: | string | Discount type. Possible values: `flat`, `percent`.
 discounts[].amount | integer | Discount amount (5% off means 500 and $10 off means 1000).
 discounts[].product_id | string | Product id that discount belongs to.
 discounts[].apply | string | Possible values: `once`, `every_time`.
-**History** | [objects]|
+**History** | [objects] |
 history[].type | string | [See events](#webhooks).
 history[].body | string | Brief description of history type.
 history[].created | integer | Unix timestamp in milliseconds.
 history[].created_date | string | ISO 8601 timestamp.
+
+### Create an Order
+
+This is a public endpoint to create a new order with a credit/debit card. It does not require authentication. This endpoint will trigger email notifications to the buyer (if enabled).
+
+```
+POST /v2/checkout
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+user_id | string | **Required**. Your user id.
+**Buyer**|object|
+buyer.email | string | **Required**. Buyer's email address (used for Celery's email notifications).
+buyer.first_name | string | Buyer's first name.
+buyer.last_name | string | Buyer's last name.
+buyer.company | string | Buyer's company.
+buyer.phone | string | Buyer's phone number.
+buyer.notes | string | Buyer notes to the seller.
+**Shipping Address** |object|
+shipping_address.first_name | string | Shipping address first name.
+shipping_address.last_name | string | Shipping address last name.
+shipping_address.company | string | Shipping address company name.
+shipping_address.line1 | string | Shipping address street address.
+shipping_address.line2 | string | Shiping address building, apartment, unit, etc.
+shipping_address.city | string | Shipping address city.
+shipping_address.state | string | Shipping address state, province, or region. If country US or CA, use 2-letter ISO state code (lowercase).
+shipping_address.zip | string | Shipping address ZIP or postal code.
+shipping_address.country | string | Shipping address 2-letter ISO country code (lowercase).
+shipping_address.phone | string | Shipping address phone number.
+**Line Items** | [objects] |
+line_items[].product_id | string | **Required**. Product id.
+line_items[].variant_id | string | Variant id (required if product has variants).
+line_items[].quantity | integer | Number of units ordered.
+**Payment Source** | object |
+payment_source.card.name | string | Name on credit/debit card. Stripe only.
+payment_source.card.exp_month | integer | **Required**. Expiration month of credit/debit card. Stripe only.
+payment_source.card.exp_year | integer | **Required**. Expiration year of credit/debit card. Stripe only.
+payment_source.card.cvc | string | **Required**. Credit/debit card CVC. Stripe only.
+discount_codes | [string] | List of coupon codes to be applied to order.
+
+##### Example Request
+```
+$ curl -X POST -H Content-Type:application/json -H \
+https://api.trycelery.com/v2/orders/checkout \
+-d'
+{
+    "user_id": "514a114080feb60200000001",
+    "buyer": {
+        "email": "first@last.com",
+        "first_name": "First",
+        "last_name": "Last",
+        "phone": "555-555-5555"
+    },
+    "shipping_address": {
+        "first_name": "First"
+        "last_name": "Last",
+        "company": "Celery",
+        "line1": "123 Street",
+        "line2": null,
+        "city": "New York",
+        "state": "ny",
+        "zip": "10012",
+        "country": "us",
+        "phone": "555-555-5555"
+    },
+    "line_items": [
+        {
+            "product_id": "531e0b012cf9766885f781b7",
+            "variant_id": "",
+            "quantity": 1
+        }
+    ],
+    "payment_source": {
+        "card": {
+            "name": "First Last",
+            "number": "4242 4242 4242 4242",
+            "exp_month": 12,
+            "exp_year": 2020,
+            "cvc": "123"
+        }
+    },
+    "discount_codes": [
+        "10dollarsoff"
+    ]
+}
+```
+
+##### Example Response
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        "_id": "544c220151feb60200000002",
+        "user_id": "514a114080feb60200000001",
+        "order_status": "open",
+        "payment_status": "unpaid",
+        "fulfillment_status": "unfulfilled",
+        ...,
+        "history": [
+            {
+                "type": "order.created",
+                "created": 1393476995707,
+                "created_date": "2014-02-27T04:56:35.707Z",
+                "body": "Your order was created."
+            }
+        ],
+        ...
+    }
+}
+```
+
+
+
 
 ### Retrieve an Order
 
@@ -886,7 +1015,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
     "data": {
         ...,
         "fulfillment_status": "fulfilled",
-        "fulfillments": 
+        "fulfillments":
         [
             {
                 "created": 1401993491000,
