@@ -234,7 +234,7 @@ history[].created_date | string | ISO 8601 timestamp.
 This is a public endpoint to create a new order with a credit/debit card. It does not require authentication. This endpoint will trigger email notifications to the buyer (if enabled).
 
 ```
-POST /v2/checkout
+POST /v2/orders/checkout
 ```
 
 ##### Arguments
