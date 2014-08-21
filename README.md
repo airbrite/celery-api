@@ -242,6 +242,7 @@ POST /v2/orders/checkout
 Attributes | Type | Description
 -----------|------|------------
 user_id | string | **Required**. Your user id.
+currency | string | 3-letter ISO currency code (lowercase). Possible values: `usd`, `cad`, `gbp`, `eur`, `aud`.
 **Buyer**|object|
 buyer.email | string | **Required**. Buyer's email address (used for Celery's email notifications).
 buyer.first_name | string | Buyer's first name.
@@ -269,7 +270,7 @@ payment_source.card.name | string | Name on credit/debit card. Stripe only.
 payment_source.card.exp_month | integer | **Required**. Expiration month of credit/debit card. Stripe only.
 payment_source.card.exp_year | integer | **Required**. Expiration year of credit/debit card. Stripe only.
 payment_source.card.cvc | string | **Required**. Credit/debit card CVC. Stripe only.
-discount_codes | [string] | List of coupon codes to be applied to order.
+discount_codes | [strings] | List of coupon codes to be applied to order.
 
 ##### Example Request
 ```
