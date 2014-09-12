@@ -4,7 +4,7 @@ The Celery API is an ecommerce logic and storage engine designed to be an essent
 
 The API is currently in beta. Please contact [help@trycelery.com](mailto:help@trycelery.com) if you intend to deploy our API in production code.
 
-Our API is organized around REST and designed to have predictable, resource-oriented URLs, and to use HTTP response codes to indicate API errors. We support cross-origin resource sharing to allow you to interact securely with our API from a client-side web application (though you should remember that you should never expose your secret API key in any public website's client-side code). JSON will be returned in all responses from the API, including errors.
+Our API is organized around REST and designed to have predictable, resource-oriented URLs, and to use HTTP response codes to indicate API errors. We support cross-origin resource sharing to allow you to interact securely with our API from a client-side web application (though you should remember that you should never expose your secret API key in any public website's client-side code). Although both JSON and XML are supported, JSON is the preferred method for API consumption. By default, JSON will be returned in all responses from the API and webhooks.
 
 To view `v1` API documentation, go to [https://www.trycelery.com/developer](https://www.trycelery.com/developer).
 
@@ -19,9 +19,10 @@ To view `v1` API documentation, go to [https://www.trycelery.com/developer](http
     * [Create an Order](#create-an-order)
     * [Retrieve an Order](#retrieve-an-order)
     * [Retrieve a List of Orders](#retrieve-a-list-of-orders)
+    * [Count Orders](#count-orders)
     * [Update an Order](#update-an-order)
     * [Cancel an Order](#cancel-an-order)
-    * [Capture an Order](#capture-an-order)
+    * [Charge an Order](#charge-an-order)
     * [Refund an Order](#refund-an-order)
     * [Fulfill an Order](#fulfill-an-order)
 * [Webhooks](#webhooks)
@@ -37,16 +38,16 @@ GET https://api.trycelery.com/v2/orders
 ### API Basics
 
 * **All requests must be made over HTTPS.**
-* **Always set required headers.** The API expects requests to be sent with the header `Content-Type` set to `application/json`.
+* **Always set required headers.** The API expects requests to be sent with the header `Content-Type` and `Accept` set to `application/json` or `application/xml`.
 * **All prices are in cents.** Prices are represented as integers in cents. Thus, an API response of `100` would represent `1.00`.
 
 ### Authentication
 
-Tokens are used to authenticate your requests. Endpoints require authentication over HTTPS. The preferred method is to authenticate with HTTP header:
+Tokens are used to authenticate your requests. Your access token can be retrieved in the Celery dashboard. Endpoints require authentication over HTTPS. The preferred method is to authenticate with HTTP header:
 
     Authorization: {ACCESS_TOKEN}
 
-Alternatively, you can authenticate by adding the query string `?access_token={ACCESS_TOKEN}` to any request URL.
+Alternatively, you can authenticate by adding the query string `?access_token={ACCESS_TOKEN}` to any request URL
 
 ### Errors
 
@@ -175,6 +176,7 @@ payment_source.airbrite.type | string | Airbrite orders only.
 client_details.ip | string | string | Browser IP from Celery checkout.
 client_details.user_agent | string | Browser user agent from Celery checkout.
 client_details.accept_language | string | Browser language from Celery checkout.
+client_details.referer | string | Browser referer from Celery checkout.
 **Line Items** | [objects] |
 line_items[].id | string | Line item identifier (uuid).
 line_items[].product_id | string | Product id.
@@ -568,7 +570,7 @@ Attributes | Type | Description
 sort | string | Sort by. Default is `created`.
 order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
 skip | string | Default is `0`.
-limit | string | A limit on the number of objects to be returned. Default is `50`.
+limit | string | A limit on the number of objects to be returned. Default is `100`.
 created | integer | A filter on the list based on object `created` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
 updated | integer | A filter on the list based on object `updated` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
 order_status | string | Possible values: `open`, `completed`, `cancelled`.
@@ -576,6 +578,13 @@ payment_status | string | Possible values: `unpaid`, `paid`, `failed`, `refunded
 fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`, `procesing`, `failed`.
 buyer.name | string | A filter on the list based on buyer name. This filter will perform a regex on the value.
 buyer.email | string | A filter on the list based on buyer email. This filter will perform a regex on the value.
+line_items.product_id | string | A filter on the list based on product id.
+line_items.variant_id | string | A filter on the list based on product variant id.
+line_items.sku | string | A filter on the list based on sku.
+type | string | A filter on order type: `card`, `paypal_adaptive`, `paypal_adaptive_chained`, `affirm`.
+shipping_method | string | A filter on shipping method.
+discounts.code | string | A filter on discount code.
+currency | string | A filter on currency code.
 
 - gt:  Return values where the relevent field is after this timestamp (in ms).
 - gte: Return values where the relevant field is after or equal to this timestamp (in ms).
@@ -601,7 +610,7 @@ https://api.trycelery.com/v2/orders?created[gte]=1388534400000
             "total": 2,
             "count": 2,
             "offset": 0,
-            "limit": 50,
+            "limit": 100,
             "has_more": false
         }
     },
@@ -613,6 +622,59 @@ https://api.trycelery.com/v2/orders?created[gte]=1388534400000
             ...
         }
     ]
+}
+```
+
+### Count orders
+
+```
+GET /v2/orders/count
+```
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+created | integer | A filter on the list based on object `created` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
+updated | integer | A filter on the list based on object `updated` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
+order_status | string | Possible values: `open`, `completed`, `cancelled`.
+payment_status | string | Possible values: `unpaid`, `paid`, `failed`, `refunded`.
+fulfillment_status | string | Possible values: `unfulfilled`, `fulfilled`, `procesing`, `failed`.
+buyer.name | string | A filter on the list based on buyer name. This filter will perform a regex on the value.
+buyer.email | string | A filter on the list based on buyer email. This filter will perform a regex on the value.
+line_items.product_id | string | A filter on the list based on product id.
+line_items.variant_id | string | A filter on the list based on product variant id.
+line_items.sku | string | A filter on the list based on sku.
+type | string | A filter on order type: `card`, `paypal_adaptive`, `paypal_adaptive_chained`, `affirm`.
+shipping_method | string | A filter on shipping method.
+discounts.code | string | A filter on discount code.
+currency | string | A filter on currency code.
+
+- gt:  Return values where the relevent field is after this timestamp (in ms).
+- gte: Return values where the relevant field is after or equal to this timestamp (in ms).
+- lt:  Return values where the relevant field is before this timestamp (in ms).
+- lte: Return values where the relevant field is before or equal to this timestamp (in ms).
+
+If I wanted to count how many orders were created at or after January 1, 2014 12:00 AM UTC, my query string would include `created[gte]=1388534400000`.
+
+If I wanted to count how many orders were purchased by `Brian Nguyen`, my query string would include `buyer.name=Brian+Nguyen`.
+
+If I wanted to count how many orders include the product with id `531e0b012cf9766885f781b7`, my query string would be include `line_items.product_id=531e0b012cf9766885f781b7`.
+
+##### Example Request
+```
+$ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+https://api.trycelery.com/v2/orders/count?created[gte]=1388534400000
+```
+
+##### Example Response
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        "total": 507
+    }
 }
 ```
 
@@ -813,9 +875,9 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/order_cancel
 ```
 
 
-### Capture an Order
+### Charge an Order
 
-This will capture payment for the order. This endpoint will trigger email notifications to the buyer (if enabled).
+This will charge payment for the order. This endpoint will trigger email notifications to the buyer (if enabled).
 
 ```
 POST /v2/orders/{id}/payment_charge
@@ -883,7 +945,7 @@ https://api.trycelery.com/v2/orders/53c389b7eba65a000061e12f/payment_charge
                 "type": "order.charge.succeeded",
                 "created": 1401993491000,
                 "created_date": "2014-06-05T06:38:00.000Z",
-                "body": "Your order was charged 20.75."
+                "body": "Your order was charged."
             }
         ],
         "balance": 0,
@@ -961,13 +1023,13 @@ https://api.trycelery.com/v2/orders/53c389b7eba65a000061e12f/payment_refund
                 "type": "order.charge.succeeded",
                 "created": 1401993491000,
                 "created_date": "2014-06-05T06:38:00.000Z",
-                "body": "Your order was charged 20.75."
+                "body": "Your order was charged."
             },
             {
                 "type": "order.refund.succeeded",
                 "created": 1401993491000,
                 "created_date": "2014-06-05T06:38:00.000Z",
-                "body": "Your order was refunded 20.75."
+                "body": "Your order was refunded."
             }
 
         ],
