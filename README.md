@@ -15,8 +15,9 @@ To view `v1` API documentation, go to [https://www.trycelery.com/developer](http
     * [Authentication](#authentication)
     * [Errors](#errors)
     * [Pagination](#pagination)
-* [Orders Resources](#orders-resource)
-    * [Create an Order](#create-an-order)
+* [Orders Resource](#orders-resource)
+    * [Checkout with Credit or Debit Card](#checkout-with-credit-or-debit-card)
+    * [Checkout with PayPal](#checkout-with-paypal)
     * [Retrieve an Order](#retrieve-an-order)
     * [Retrieve a List of Orders](#retrieve-a-list-of-orders)
     * [Count Orders](#count-orders)
@@ -25,6 +26,10 @@ To view `v1` API documentation, go to [https://www.trycelery.com/developer](http
     * [Charge an Order](#charge-an-order)
     * [Refund an Order](#refund-an-order)
     * [Fulfill an Order](#fulfill-an-order)
+* [Coupons Resource](#coupons-resource)
+    * [Validate Coupon Code](#validate-coupon-code)
+* [Users Resource](#users-resource)
+    * [Retrieve tax rate](#retrieve-tax-rate)
 * [Webhooks](#webhooks)
 
 ## Getting Started
@@ -95,7 +100,7 @@ All responses return with a similar structure. Collections returns an array and 
 
 Attributes | Type | Description
 -----------|------|------------
-_id | string | Unique identifier for the order.
+_id | string | Order unique identifier.
 user_id | string | Seller unique identifier.
 order_status | string | Possible values: `open`, `completed`, `cancelled`.
 payment_status | string | Possible values: `unpaid`, `paid`, `refunded`, `failed`.
@@ -231,9 +236,9 @@ history[].body | string | Brief description of history type.
 history[].created | integer | Unix timestamp in milliseconds.
 history[].created_date | string | ISO 8601 timestamp.
 
-### Create an Order
+### Checkout with Credit or Debit Card
 
-This is a public endpoint to create a new order with a credit/debit card. It does not require authentication. This endpoint will trigger email notifications to the buyer (if enabled).
+This is a public endpoint to create a new order with a credit or debit card. It does not require authentication.
 
 For cross-browser compatibility with older versions of Internet Explorer, we recommend using [jQuery-ajaxTransport-XDomainRequest](https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest).
 
@@ -349,7 +354,112 @@ https://api.trycelery.com/v2/orders/checkout \
 }
 ```
 
+### Checkout with PayPal
 
+This is a public endpoint to create a new order with PayPal. It does not require authentication. Celery uses [PayPal Adaptive Payments](https://developer.paypal.com/docs/classic/products/adaptive-payments/).
+
+For cross-browser compatibility with older versions of Internet Explorer, we recommend using [jQuery-ajaxTransport-XDomainRequest](https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest).
+
+The response will include a URL that the buyer needs to be redirected to initiate the PayPal payment flow. This URL can be found found in `data.payment_source.paypal.redirect_url`. After the buyer completes the PayPal payments flow, they will be redirected back to return url provided. Please note that the Celery appends the order number to the return URL. Thus, if you set the return URL to be `https://yourshop.com/confirmation`, then the buyer will be redirected to `https://yourshop.com/confirmation/101340827`. If the buyer cancels during the PayPal payment flow, then they will be redirected to the cancel URL.
+
+```
+POST /v2/orders/checkout/paypal
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+user_id | string | **Required**. Your user id.
+cancel_url | string | **Required.** URL that buyer will go to if they cancel order.
+return_url | string | **Required.** URL that buyer will go to after they complete PayPal payment flow.
+currency | string | 3-letter ISO currency code (lowercase). Possible values: `usd`, `cad`, `gbp`, `eur`, `aud`.
+**Buyer**|object|
+buyer.email | string | **Required**. Buyer's email address (used for Celery's email notifications).
+buyer.first_name | string | Buyer's first name.
+buyer.last_name | string | Buyer's last name.
+buyer.company | string | Buyer's company.
+buyer.phone | string | Buyer's phone number.
+buyer.notes | string | Buyer notes to the seller.
+**Shipping Address** |object|
+shipping_address.first_name | string | Shipping address first name.
+shipping_address.last_name | string | Shipping address last name.
+shipping_address.company | string | Shipping address company name.
+shipping_address.line1 | string | Shipping address street address.
+shipping_address.line2 | string | Shiping address building, apartment, unit, etc.
+shipping_address.city | string | Shipping address city.
+shipping_address.state | string | Shipping address state, province, or region. If country US or CA, use 2-letter ISO state code (lowercase).
+shipping_address.zip | string | Shipping address ZIP or postal code.
+shipping_address.country | string | Shipping address 2-letter ISO country code (lowercase).
+shipping_address.phone | string | Shipping address phone number.
+**Line Items** | [objects] |
+line_items[].product_id | string | **Required**. Product id.
+line_items[].variant_id | string | Variant id (required if product has variants).
+line_items[].quantity | integer | Number of units ordered.
+discount_codes | [strings] | List of coupon codes to be applied to order.
+
+##### Example Request
+```
+$ curl -X POST -H Content-Type:application/json -H \
+https://api.trycelery.com/v2/orders/checkout/paypal \
+-d'
+{
+    "user_id": "514a114080feb60200000001",
+    "cancel_url": "https://www.yourshop.com",
+    "return_url": "https://www.yourshop.com/confirmation",
+    "buyer": {
+        "email": "first@last.com",
+        "first_name": "First",
+        "last_name": "Last",
+        "phone": "555-555-5555"
+    },
+    "shipping_address": {
+        "first_name": "First"
+        "last_name": "Last",
+        "company": "Celery",
+        "line1": "123 Street",
+        "line2": null,
+        "city": "New York",
+        "state": "ny",
+        "zip": "10012",
+        "country": "us",
+        "phone": "555-555-5555"
+    },
+    "line_items": [
+        {
+            "product_id": "531e0b012cf9766885f781b7",
+            "quantity": 1
+        }
+    ]
+}
+```
+
+##### Example Response
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        "_id": null,
+        "user_id": "514a114080feb60200000001",
+        "number": "101340827",
+        "order_status": "open",
+        "payment_status": "unpaid",
+        "fulfillment_status": "unfulfilled",
+        "type": "paypal_adaptive",
+        "cancel_url": "https://www.yourshop.com/101340827",
+        "return_url": "https://www.yourshop.com/confirmation/101340827",
+        "payment_source": {
+            "paypal": {
+                "redirect_url": "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_ap-preapproval&preapprovalkey=PA-3KC050249N5937812",
+                "preapproval_key": "PA-3KC050249N5937812"
+            }
+        },
+        ...
+    }
+}
+```
 
 
 ### Retrieve an Order
@@ -361,7 +471,7 @@ GET /v2/orders/{id}
 
 Attributes | Type | Description
 -----------|------|------------
-id | string | **Required**. Unique identifier for the order
+id | string | **Required**. Order unique identifier.
 
 ##### Example Request
 ```
@@ -689,7 +799,7 @@ PUT /v2/orders/{id}
 
 Attributes | Type | Description
 -----------|------|------------
-_id | string | **Required**. Unique identifier for the order.
+_id | string | **Required**. Order unique identifier.
 **Buyer** | object |
 buyer.email | string | Buyer's email address.
 buyer.first_name | string | Buyer's first name.
@@ -839,7 +949,7 @@ POST /v2/orders/{id}/order_cancel
 
 Attributes | Type | Description
 -----------|------|------------
-id | string | **Required**. Unique identifier for the order
+id | string | **Required**. Order unique identifier.
 
 ##### Example Request
 ```
@@ -887,7 +997,7 @@ POST /v2/orders/{id}/payment_charge
 
 Attributes | Type | Description
 -----------|------|------------
-id | string | **Required**. Unique identifier for the order
+id | string | **Required**. Order unique identifier.
 
 ##### Example Request
 
@@ -967,7 +1077,7 @@ POST /v2/orders/{id}/payment_refund
 
 Attributes | Type | Description
 -----------|------|------------
-id | string | **Required**. Unique identifier for the order
+id | string | **Required**. Order unique identifier.
 
 ##### Example Request
 ```
@@ -1054,7 +1164,7 @@ POST /v2/orders/{id}/fulfillment_succeed
 
 Attributes | Type | Description
 -----------|------|------------
-id | string | **Required**. Unique identifier for the order
+id | string | **Required**. Order unique identifier.
 courier | string | Courier that will fulfill order. Possible values: `ups`, `usps`, `fedex`, `dhl`, `other`.
 number | string | Tracking number.
 
@@ -1108,9 +1218,146 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
 }
 ```
 
+## Coupons Resource
+
+Attributes | Type | Description
+-----------|------|------------
+id | string | Coupon unique identifier.
+user_id | string | Seller unique identifier.
+type | string | Possible values: `flat`, `percent`.
+code | string | Coupon code (must be unique).
+filter | string | Possible values: `order`, `product`.
+apply | string | Possible values: `once`, `every_item`.
+product_id | string | Product id for product-specific coupons.
+enabled | boolean | Whether coupon is valid.
+amount | integer | Coupon amount. $5 should be 500 (prices in cents). 10% should be 10.
+times_used | integer | Number of times coupon was redeemed.
+begins | integer | Coupon begin date. Unix timestamp in milliseconds.
+begins_date | string | Coupon begin date. ISO 8601 timestamp.
+expires | integer | Coupon expiration date. Unix timestamp in milliseconds.
+expires_date | string | Coupon expiration date. ISO 8601 timestamp.
+used_emails | [string] | List of buyer email addresses who have redeemed coupon.
+created | integer | Unix timestamp in milliseconds.
+created_date | string | ISO 8601 timestamp.
+updated | integer | Unix timestamp in milliseconds.
+updated_date | string | ISO 8601 timestamp.
+
+
+### Validate coupon code
+
+This public endpoint returns whether a coupon code is valid. If the coupon is not valid, then the endpoint will respond with an error. This endpoint does not require authentication.
+
+```
+POST /v2/coupons/validate
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+user_id | string | **Required**. Seller unique identifier.
+code | string | **Required**. Coupon code to validate.
+line_items | [string] | List of product ids to validate against product-specific coupons.
+
+##### Example Request
+```
+$ curl -X POST -H Content-Type:application/json \
+https://api.trycelery.com/v2/coupons/validate
+```
+
+##### Success Example Response
+
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        "type": "flat",
+        "code": "036dabee2bd3",
+        "filter": "order",
+        "apply": "once",
+        "product_id": null,
+        "enabled": true,
+        "amount": 10000,
+        "quantity": 0,
+        "times_used": 1,
+        "order_minimum": 0,
+        "begins": 1412146800000,
+        "begins_date": "2014-08-08T21:52:37.055Z",
+        "expires": 1413010800000,
+        "expires_date": null,
+        "used_emails": [],
+        "_id": "53e546a5fc08e40400631da9",
+        "user_id": "5330bc8c5ade8207002df9f6",
+        "version": "v2",
+        "created": 1407534757055,
+        "updated": 1407534757055,
+        "created_date": "2014-08-08T21:52:37.055Z",
+        "updated_date": "2014-08-08T21:52:37.055Z",
+        "locked": false,
+        "metadata": {}
+    }
+}
+```
+
+##### Error Example Response
+
+```json
+{
+    "meta": {
+        "code": 400,
+        "error": {
+            "message": "Coupon code is expired.",
+            "code": 400
+        }
+    },
+    "data": "Coupon code is expired."
+}
+```
+
+## Users Resource
+
+### Retrieve tax rate
+
+This public endpoint returns the sales tax rate based on the seller's tax rules and the shipping address provided. This endpoint does not require authentication.
+
+```
+GET /v2/users/{id}/tax_rates
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+id | string | **Required**. Seller unique identifier.
+shipping_country | string | **Required**. 2-letter ISO country code (lowercase).
+shipping_state | string | 2-letter ISO state code if United States or Canada (lowercase).
+shipping_zip | string | 5-digit zip code if United States. Supports optional 4 digits.
+
+##### Example Request
+```
+$ curl -X GET -H Content-Type:application/json \
+https://api.trycelery.com/v2/users/530ec58358b6ee0000f5d440/tax_rates?shipping_country=us&shipping_state=ca&shipping_zip=94105
+```
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        "base": 0.0875
+    }
+}
+```
+
+
 ## Webhooks
 
-Events are our way of letting you know about something interesting has happened with your order. The Celery API can send events directly to your server using webhooks. Webhooks are managed in your account settings.
+Events are our way of letting you know about something interesting has happened with your order. The Celery API can send events directly to your server using webhooks. Please contact Celery if you would like to implement webhooks.
 
 To acknowledge that you received the webhook without any problem, your server should return a 200 HTTP status code. Any response code outside the 2xx and 3xx range will indicate to Celery that you did not receive the webhook. When a webhook is not received for whatever reason, Celery will continue trying to send the webhook for up to 3 times.
 
@@ -1137,6 +1384,10 @@ This is a list of all the types of events we currently send. We may add more at 
 {
     "type": "order.created",
     "data": {
+        "_id": "530ec58358b6ee0000f5d440",
+        "order_status": "open",
+        "payment_status": "unpaid",
+        "fulfillment_status": "unfulfilled",
         ...
     }
 }
