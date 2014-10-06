@@ -1222,7 +1222,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
 
 Attributes | Type | Description
 -----------|------|------------
-id | string | Coupon unique identifier.
+_id | string | Coupon unique identifier.
 user_id | string | Seller unique identifier.
 type | string | Possible values: `flat`, `percent`.
 code | string | Coupon code (must be unique).
