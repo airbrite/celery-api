@@ -641,7 +641,6 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440
                 }
             }
         ],
-        "fulfillments": [],
         "history": [
             {
                 "type": "order.created",
@@ -1167,6 +1166,7 @@ Attributes | Type | Description
 id | string | **Required**. Order unique identifier.
 courier | string | Courier that will fulfill order. Possible values: `ups`, `usps`, `fedex`, `dhl`, `other`.
 number | string | Tracking number.
+serial_numbers | [string] | Serial numbers associated with the order.
 
 ##### Example Request
 
@@ -1176,7 +1176,10 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
 -d'
 {
     "courier" : "ups",
-    "number" : "1zasdfajkfsdljasdf"
+    "number" : "1zasdfajkfsdljasdf",
+    "serial_numbers": [
+        "abc123"
+    ]
 }
 ```
 
@@ -1190,15 +1193,15 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
     "data": {
         ...,
         "fulfillment_status": "fulfilled",
-        "fulfillments":
-        [
-            {
-                "created": 1401993491000,
-                "created_date": "2014-06-05T06:38:00.000Z",
-                "courier": "ups",
-                "number": "1zasdfajkfsdljasdf"
-            }
-        ],
+        "fulfillment": {
+            "created": 1401993491000,
+            "created_date": "2014-06-05T06:38:00.000Z",
+            "courier": "ups",
+            "number": "1zasdfajkfsdljasdf",
+            "serial_numbers": [
+                "abc123"
+            ]
+        },
         "history": [
             {
                 "type": "order.created",
