@@ -295,7 +295,7 @@ https://api.trycelery.com/v2/orders/checkout \
         "phone": "555-555-5555"
     },
     "shipping_address": {
-        "first_name": "First"
+        "first_name": "First",
         "last_name": "Last",
         "company": "Celery",
         "line1": "123 Street",
@@ -414,7 +414,7 @@ https://api.trycelery.com/v2/orders/checkout/paypal \
         "phone": "555-555-5555"
     },
     "shipping_address": {
-        "first_name": "First"
+        "first_name": "First",
         "last_name": "Last",
         "company": "Celery",
         "line1": "123 Street",
