@@ -26,6 +26,12 @@ To view `v1` API documentation, go to [https://www.trycelery.com/developer](http
     * [Charge an Order](#charge-an-order)
     * [Refund an Order](#refund-an-order)
     * [Fulfill an Order](#fulfill-an-order)
+* [Products Resource](#products-resource)
+    * [Retrieve a List of Products](#retrieve-a-list-of-products)
+    * [Retrieve a Product](#retrieve-a-product)
+* [Collections Resource](#collections-resource)
+    * [Retrieve a List of Collections](#retrieve-a-list-of-collections)
+    * [Retrieve a Collection](#retrieve-a-collection)
 * [Coupons Resource](#coupons-resource)
     * [Validate Coupon Code](#validate-coupon-code)
 * [Users Resource](#users-resource)
@@ -360,7 +366,7 @@ This is a public endpoint to create a new order with PayPal. It does not require
 
 For cross-browser compatibility with older versions of Internet Explorer, we recommend using [jQuery-ajaxTransport-XDomainRequest](https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest).
 
-The response will include a URL that the buyer needs to be redirected to initiate the PayPal payment flow. This URL can be found found in `data.payment_source.paypal.redirect_url`. After the buyer completes the PayPal payments flow, they will be redirected back to return url provided. Please note that the Celery appends the order number to the return URL. Thus, if you set the return URL to be `https://yourshop.com/confirmation`, then the buyer will be redirected to `https://yourshop.com/confirmation/101340827`. If the buyer cancels during the PayPal payment flow, then they will be redirected to the cancel URL.
+The response will include a URL that the buyer needs to be redirected to initiate the PayPal payment flow. This URL can be found found in `data.payment_source.paypal.redirect_url`. After the buyer completes the PayPal payments flow, they will be redirected back to return URL provided. Please note that the Celery appends the order number to the return URL. Thus, if you set the return URL to be `https://yourshop.com/confirmation`, then the buyer will be redirected to `https://yourshop.com/confirmation/101340827`. If the buyer cancels during the PayPal payment flow, then they will be redirected to the cancel URL.
 
 ```
 POST /v2/orders/checkout/paypal
@@ -1220,6 +1226,385 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
     }
 }
 ```
+
+## Products Resource
+
+Attributes | Type | Description
+-----------|------|------------
+_id | value | Product unique identifier.
+slug | string | Seller-defined indentifier for hosted shop page.
+name | string | Product name.
+description | string | Description of Product and supports `HTML` markup.
+sku | integer | Base product sku.
+price | integer | Base product price.
+weight | float | Default value is `0`.
+published | boolean | Defines whether a product is shown.
+created | integer | Product created date. Unix timestamp in milliseconds.
+updated | integer | Product updated date. Unix timestamp in milliseconds.
+created_date | string | Product created date. ISO 8601 timestamp.
+updated_date | string | Product updated date. ISO 8601 timestamp.
+**Flags** | object |
+flags.enable_taxes | boolean | Whether to collect tax.
+flags.enable_options | boolean | Whether product has variants.
+**Images** | object | 
+images[].url | string | Product image URL.
+**Options** | objects | 
+options[].id | string | Option id.
+options[].name | string | Option name (e.g., small, medium).
+options[].values | object | 
+**Variants** | object | 
+variants[].id | string | Variant id used to checkout products with variants.
+variants[].name | string | Variant name.
+variants[].sku | string | Variant sku.
+variants[].price | integer | Variant price.
+variants[].weight | integer | Variant weight.
+variants[].options | object | Variant settings.
+
+### Retrieve a list of products
+
+```
+GET /v2/products
+```
+##### Arguements
+
+Attributes | Type | Description
+-----------|------|------------
+sort | string | Sort by. Default is `created`.
+order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
+skip | string | Default is `0`.
+limit | string | A limit on the number of objects to be returned. Default is `100`.
+
+
+##### Example Request
+
+```
+$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+https://api.trycelery.com/v2/products
+```
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200,
+        "paging": {
+            "total": 3,
+            "count": 3,
+            "limit": 100,
+            "offset": 0,
+            "page": 1,
+            "pages": 1,
+            "has_more": false
+        }
+    },
+    "data": [
+        {
+            "_id": "546aab7b1657500600a781bc",
+            "slug": "90ca88bd-3830-4ee0-b39f-e5f200d0a489",
+            "name": "Koala 1",
+            "description": "<p>Koala party</p>",
+            "sku": null,
+            "price": 1500,
+            "deposit": 0,
+            "weight": 0,
+            "inventory": 0,
+            "published": true,
+            "flags": {
+                "enable_taxes": true,
+                "enable_options": false,
+                "enable_inventory": false
+            },
+            "images": [],
+            "options": [],
+            "variants": [],
+            "user_id": "54629b565f388707003de6ea",
+            "version": "v2",
+            "created": 1416276859872,
+            "updated": 1416276859970,
+            "created_date": "2014-11-18T02:14:19.872Z",
+            "updated_date": "2014-11-18T02:14:19.970Z",
+            "locked": false,
+            "metadata": {}
+        },
+        {
+            "_id": "546a9d731657500600a781ba",
+            "slug": "12b1f0a1-b18c-407a-9f9c-470f262f1853",
+            "name": "Koala 2",
+            "description": null,
+            "sku": null,
+            "price": 2000,
+            "deposit": 0,
+            "weight": 0,
+            "inventory": 0,
+            "published": true,
+            "flags": {
+                "enable_taxes": true,
+                "enable_options": false,
+                "enable_inventory": false
+            },
+            "images": [],
+            "options": [],
+            "variants": [],
+            "user_id": "54629b565f388707003de6ea",
+            "version": "v2",
+            "created": 1416273267130,
+            "updated": 1416273287831,
+            "created_date": "2014-11-18T01:14:27.130Z",
+            "updated_date": "2014-11-18T01:14:47.831Z",
+            "locked": false,
+            "metadata": {}
+        },
+        {
+            "_id": "546540f2793b4c050015d96c",
+            "slug": "7dc66c4a-99ca-48b2-b584-23de515272c0",
+            "name": "Koala 3",
+            "description": null,
+            "sku": null,
+            "price": 2500,
+            "deposit": 0,
+            "weight": 0,
+            "inventory": 0,
+            "published": true,
+            "flags": {
+                "enable_taxes": true,
+                "enable_options": false,
+                "enable_inventory": false
+            },
+            "images": [],
+            "options": [],
+            "variants": [],
+            "user_id": "54629b565f388707003de6ea",
+            "version": "v2",
+            "created": 1415921906675,
+            "updated": 1415922135705,
+            "created_date": "2014-11-13T23:38:26.675Z",
+            "updated_date": "2014-11-13T23:42:15.705Z",
+            "locked": false,
+            "metadata": {}
+        }
+    ]
+}
+```
+
+### Retrieve a Product
+
+```
+GET /v2/products/{id}
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+id | string | **Required**. Product unique identifier.
+
+
+##### Example Request
+```
+$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+https://api.trycelery.com/v2/products/546540f2793b4c050015d96c
+```
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        "slug": "7dc66c4a-99ca-48b2-b584-23de515272c0",
+        "name": "Koala Bears",
+        "description": "<p>Cute but dangerous.</p>",
+        "sku": null,
+        "price": 1000,
+        "deposit": 0,
+        "weight": 0,
+        "inventory": 0,
+        "published": true,
+        "flags": {
+            "enable_taxes": true,
+            "enable_options": false,
+            "enable_inventory": false
+        },
+        "images": [],
+        "options": [],
+        "variants": [],
+        "_id": "546540f2793b4c050015d96c",
+        "user_id": "54629b565f388707003de6ea",
+        "version": "v2",
+        "created": 1415921906675,
+        "updated": 1415922135705,
+        "created_date": "2014-11-13T23:38:26.675Z",
+        "updated_date": "2014-11-13T23:42:15.705Z",
+        "locked": false,
+        "metadata": {}
+    }
+}
+```
+
+## Collections Resource
+
+Attributes | Type | Description
+-----------|------|------------
+_id | string | **Required**. Collections unique identifier.
+slug | string | Seller-defined indentifier for hosted shop page
+name | string | Collection name.
+published | boolean | Defines whether collection is shown.
+product_ids | [objects] | List of product ids in collection.
+user_id | string | Seller unique identifier
+created | integer | Collection created date. Unix timestamp in milliseconds.
+updated | integer | Collection updated date. Unix timestamp in milliseconds.
+created_date | string | Collection created date. ISO 8601 timestamp.
+updated_date | string | Collection updated date. ISO 8601 timestamp.
+products | [objects] | List of products in collection.
+
+
+### Retrieve a list of Collections
+
+```
+GET /v2/collections/
+```
+
+##### Arguements
+
+Attributes | Type | Description
+-----------|------|------------
+sort | string | Sort by. Default is `created`.
+order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
+skip | string | Default is `0`.
+limit | string | A limit on the number of objects to be returned. Default is `100`.
+
+
+##### Example Request
+```
+$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+https://api.trycelery.com/v2/collections
+```
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200,
+        "paging": {
+            "total": 1,
+            "count": 1,
+            "limit": 100,
+            "offset": 0,
+            "page": 1,
+            "pages": 1,
+            "has_more": false
+        }
+    },
+    "data": {
+        "slug": "53171e1a-a272-4a73-9f91-214159672197",
+        "name": "Christmas Koala Collection",
+        "published": true,
+        "product_ids": [
+            "546540f2793b4c050015d96c",
+            "54653d6e793b4c050015d96a",
+            "54653d42793b4c050015d969"
+        ],
+        "_id": "54736eb0b588d10400fbe7cc",
+        "user_id": "54629b565f388707003de6ea",
+        "version": "v2",
+        "created": 1416851120197,
+        "updated": 1416851141330,
+        "created_date": "2014-11-24T17:45:20.197Z",
+        "updated_date": "2014-11-24T17:45:41.330Z",
+        "locked": false,
+        "metadata": {},
+        "products": [
+            {
+                "_id": "546540f2793b4c050015d96c",
+                "slug": "7dc66c4a-99ca-48b2-b584-23de515272c0",
+                "name": "Koala Two-Pack",
+                "description": "<p>A mommy kaola with baby koala packed inside.</p>",
+                "sku": null,
+                "price": 1000,
+                "deposit": 0,
+                "weight": 0,
+                "inventory": 0,
+                "published": true,
+                "flags": {
+                    "enable_taxes": true,
+                    "enable_options": false,
+                    "enable_inventory": false
+                },
+                "images": [],
+                "options": [],
+                "variants": [],
+                "user_id": "54629b565f388707003de6ea",
+                "version": "v2",
+                "created": 1415921906675,
+                "updated": 1415922135705,
+                "created_date": "2014-11-13T23:38:26.675Z",
+                "updated_date": "2014-11-13T23:42:15.705Z",
+                "locked": false,
+                "metadata": {}
+            },
+            ...
+        ]
+    }
+}
+```
+
+### Retrieve a Collection
+
+```
+GET /v2/collections/{id}
+```
+
+##### Example Request
+```
+$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+https://api.trycelery.com/v2/collections/{id}
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+id | string | **Required** Collection unique identifier.
+
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        "slug": "53171e1a-a272-4a73-9f91-214159672197",
+        "name": "Christmas Koala Collection",
+        "published": true,
+        "product_ids": [
+            "546540f2793b4c050015d96c",
+            "54653d6e793b4c050015d96a",
+            "54653d42793b4c050015d969"
+        ],
+        "_id": "54736eb0b588d10400fbe7cc",
+        "user_id": "54629b565f388707003de6ea",
+        "version": "v2",
+        "created": 1416851120197,
+        "updated": 1416851141330,
+        "created_date": "2014-11-24T17:45:20.197Z",
+        "updated_date": "2014-11-24T17:45:41.330Z",
+        "locked": false,
+        "metadata": {},
+        "products": [
+            {   
+                ...
+            },
+        ]
+    }
+}
+```
+
 
 ## Coupons Resource
 
