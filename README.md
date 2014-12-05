@@ -35,7 +35,7 @@ To view `v1` API documentation, go to [https://legacy.trycelery.com/developer](h
 * [Coupons Resource](#coupons-resource)
     * [Validate Coupon Code](#validate-coupon-code)
 * [Users Resource](#users-resource)
-    * [Retrieve tax rate](#retrieve-tax-rate)
+    * [Retrieve Tax Rate](#retrieve-tax-rate)
 * [Webhooks](#webhooks)
 
 ## Getting Started
@@ -45,6 +45,8 @@ The base endpoint URL is `https://api.trycelery.com`. Celery is currently on ver
 ```
 GET https://api.trycelery.com/v2/orders
 ```
+
+To access the sandbox environment, the base endpoint URL is `https://api-sandbox.trycelery.com`.
 
 ### API Basics
 
@@ -1246,13 +1248,13 @@ updated_date | string | Product updated date. ISO 8601 timestamp.
 **Flags** | object |
 flags.enable_taxes | boolean | Whether to collect tax.
 flags.enable_options | boolean | Whether product has variants.
-**Images** | object | 
+**Images** | object |
 images[].url | string | Product image URL.
-**Options** | objects | 
+**Options** | objects |
 options[].id | string | Option id.
 options[].name | string | Option group name (e.g., size)
 options[].values | object | Option group values (e.g., small, medium, large)
-**Variants** | object | 
+**Variants** | object |
 variants[].id | string | Variant id. Used to checkout products with variants.
 variants[].name | string | Variant name.
 variants[].sku | string | Variant sku.
@@ -1597,7 +1599,7 @@ id | string | **Required** Collection unique identifier.
         "locked": false,
         "metadata": {},
         "products": [
-            {   
+            {
                 ...
             },
         ]
