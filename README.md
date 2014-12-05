@@ -6,7 +6,7 @@ The API is currently in beta. Please contact [help@trycelery.com](mailto:help@tr
 
 Our API is organized around REST and designed to have predictable, resource-oriented URLs, and to use HTTP response codes to indicate API errors. We support cross-origin resource sharing to allow you to interact securely with our API from a client-side web application (though you should remember that you should never expose your secret API key in any public website's client-side code). Although both JSON and XML are supported, JSON is the preferred method for API consumption. By default, JSON will be returned in all responses from the API and webhooks.
 
-To view `v1` API documentation, go to [https://www.trycelery.com/developer](https://www.trycelery.com/developer).
+To view `v1` API documentation, go to [https://legacy.trycelery.com/developer](https://legacy.trycelery.com/developer).
 
 ## Menu
 
