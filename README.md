@@ -1250,10 +1250,10 @@ flags.enable_options | boolean | Whether product has variants.
 images[].url | string | Product image URL.
 **Options** | objects | 
 options[].id | string | Option id.
-options[].name | string | Option name (e.g., small, medium).
-options[].values | object | 
+options[].name | string | Option group name (e.g., size)
+options[].values | object | Option group values (e.g., small, medium, large)
 **Variants** | object | 
-variants[].id | string | Variant id used to checkout products with variants.
+variants[].id | string | Variant id. Used to checkout products with variants.
 variants[].name | string | Variant name.
 variants[].sku | string | Variant sku.
 variants[].price | integer | Variant price.
@@ -1449,11 +1449,11 @@ https://api.trycelery.com/v2/products/546540f2793b4c050015d96c
 Attributes | Type | Description
 -----------|------|------------
 _id | string | **Required**. Collections unique identifier.
-slug | string | Seller-defined indentifier for hosted shop page
+slug | string | Seller-defined identifier for hosted shop page.
 name | string | Collection name.
 published | boolean | Defines whether collection is shown.
 product_ids | [objects] | List of product ids in collection.
-user_id | string | Seller unique identifier
+user_id | string | Seller unique identifier.
 created | integer | Collection created date. Unix timestamp in milliseconds.
 updated | integer | Collection updated date. Unix timestamp in milliseconds.
 created_date | string | Collection created date. ISO 8601 timestamp.
