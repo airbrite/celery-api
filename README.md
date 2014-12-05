@@ -1232,7 +1232,7 @@ https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed
 Attributes | Type | Description
 -----------|------|------------
 _id | value | Product unique identifier.
-slug | string | Seller-defined indentifier for hosted shop page.
+slug | string | Seller-defined identifier for hosted shop page.
 name | string | Product name.
 description | string | Description of Product and supports `HTML` markup.
 sku | integer | Base product sku.
