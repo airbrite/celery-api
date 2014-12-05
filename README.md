@@ -145,7 +145,7 @@ shipping_address.last_name | string | Shipping address last name.
 shipping_address.name | string | Shipping address first and last name.
 shipping_address.company | string | Shipping address company name.
 shipping_address.line1 | string | Shipping address street address.
-shipping_address.line2 | string | Shiping address building, apartment, unit, etc.
+shipping_address.line2 | string | Shipping address building, apartment, unit, etc.
 shipping_address.city | string | Shipping address city.
 shipping_address.state | string | Shipping address state, province, or region.
 shipping_address.zip | string | Shipping address ZIP or postal code.
@@ -270,7 +270,7 @@ shipping_address.first_name | string | Shipping address first name.
 shipping_address.last_name | string | Shipping address last name.
 shipping_address.company | string | Shipping address company name.
 shipping_address.line1 | string | Shipping address street address.
-shipping_address.line2 | string | Shiping address building, apartment, unit, etc.
+shipping_address.line2 | string | Shipping address building, apartment, unit, etc.
 shipping_address.city | string | Shipping address city.
 shipping_address.state | string | Shipping address state, province, or region. If country US or CA, use 2-letter ISO state code (lowercase).
 shipping_address.zip | string | Shipping address ZIP or postal code.
@@ -392,7 +392,7 @@ shipping_address.first_name | string | Shipping address first name.
 shipping_address.last_name | string | Shipping address last name.
 shipping_address.company | string | Shipping address company name.
 shipping_address.line1 | string | Shipping address street address.
-shipping_address.line2 | string | Shiping address building, apartment, unit, etc.
+shipping_address.line2 | string | Shipping address building, apartment, unit, etc.
 shipping_address.city | string | Shipping address city.
 shipping_address.state | string | Shipping address state, province, or region. If country US or CA, use 2-letter ISO state code (lowercase).
 shipping_address.zip | string | Shipping address ZIP or postal code.
@@ -701,7 +701,7 @@ shipping_method | string | A filter on shipping method.
 discounts.code | string | A filter on discount code.
 currency | string | A filter on currency code.
 
-- gt:  Return values where the relevent field is after this timestamp (in ms).
+- gt:  Return values where the relevant field is after this timestamp (in ms).
 - gte: Return values where the relevant field is after or equal to this timestamp (in ms).
 - lt:  Return values where the relevant field is before this timestamp (in ms).
 - lte: Return values where the relevant field is before or equal to this timestamp (in ms).
@@ -764,7 +764,7 @@ shipping_method | string | A filter on shipping method.
 discounts.code | string | A filter on discount code.
 currency | string | A filter on currency code.
 
-- gt:  Return values where the relevent field is after this timestamp (in ms).
+- gt:  Return values where the relevant field is after this timestamp (in ms).
 - gte: Return values where the relevant field is after or equal to this timestamp (in ms).
 - lt:  Return values where the relevant field is before this timestamp (in ms).
 - lte: Return values where the relevant field is before or equal to this timestamp (in ms).
@@ -816,7 +816,7 @@ shipping_address.first_name | string | Shipping address first name.
 shipping_address.last_name | string | Shipping address last name.
 shipping_address.company | string | Shipping address company name.
 shipping_address.line1 | string | Shipping address street address.
-shipping_address.line2 | string | Shiping address building, apartment, unit, etc.
+shipping_address.line2 | string | Shipping address building, apartment, unit, etc.
 shipping_address.city | string | Shipping address city.
 shipping_address.state | string | Shipping address state, province, or region. US or CA states should use their 2-letter ISO state code and be lowercase.
 shipping_address.zip | string | Shipping address ZIP or postal code.
@@ -1265,7 +1265,7 @@ variants[].options | object | Variant settings.
 ```
 GET /v2/products
 ```
-##### Arguements
+##### Arguments
 
 Attributes | Type | Description
 -----------|------|------------
@@ -1467,7 +1467,7 @@ products | [objects] | List of products in collection.
 GET /v2/collections/
 ```
 
-##### Arguements
+##### Arguments
 
 Attributes | Type | Description
 -----------|------|------------
@@ -1522,7 +1522,7 @@ https://api.trycelery.com/v2/collections
                 "_id": "546540f2793b4c050015d96c",
                 "slug": "7dc66c4a-99ca-48b2-b584-23de515272c0",
                 "name": "Koala Two-Pack",
-                "description": "<p>A mommy kaola with baby koala packed inside.</p>",
+                "description": "<p>A mommy koala with baby koala packed inside.</p>",
                 "sku": null,
                 "price": 1000,
                 "deposit": 0,
