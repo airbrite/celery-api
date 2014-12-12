@@ -33,6 +33,8 @@ To view `v1` API documentation, go to [https://legacy.trycelery.com/developer](h
     * [Retrieve a List of Collections](#retrieve-a-list-of-collections)
     * [Retrieve a Collection](#retrieve-a-collection)
 * [Coupons Resource](#coupons-resource)
+    * [Retrieve a List of Coupons](#retrieve-a-list-of-coupons)
+    * [Retrieve a Coupon](#retrieve-a-coupon)
     * [Validate Coupon Code](#validate-coupon-code)
 * [Users Resource](#users-resource)
     * [Retrieve tax rate](#retrieve-tax-rate)
@@ -80,6 +82,16 @@ Our error responses have the format:
 
 ### Pagination
 
+Attributes | Type | Description
+-----------|------|------------
+total | integer | Total number of records in list.
+count | integer | Number of records on current page.
+limit | integer | A limit on the number of records to be returned. Default is `100`.
+offset | integer | Starting record to be returned. Default is `0`.
+page | integer | Current page number.
+pages | integer | Total number of pages.
+has_more | boolean | Whether current page is last page.
+
 All responses return with a similar structure. Collections returns an array and single objects return an object. Here's an example of a collection response:
 
 ```json
@@ -89,8 +101,10 @@ All responses return with a similar structure. Collections returns an array and 
         "paging": {
             "total": 45,
             "count": 10,
-            "offset": 5,
             "limit": 10,
+            "offset": 5,
+            "page": 2,
+            "pages": 5,
             "has_more": true
         }
     },
@@ -101,6 +115,11 @@ All responses return with a similar structure. Collections returns an array and 
     ]
 }
 ```
+
+By default, requests return a limit of 100 records per page. You can change this by setting the `limit` parameter in the request. For example, `"limit": 10` will return 10 records per page. The Celery API returns a maximum of `100` records per page.
+
+When there are more records available than can be returned in a single page, you can paginate through them by setting the `offset` or `page`.
+
 
 ## Orders Resource
 
@@ -684,7 +703,9 @@ Attributes | Type | Description
 -----------|------|------------
 sort | string | Sort by. Default is `created`.
 order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
-skip | string | Default is `0`.
+offset | string | Default is `0`.
+page | integer | Current page number.
+pages | integer | Total number of pages.
 limit | string | A limit on the number of objects to be returned. Default is `100`.
 created | integer | A filter on the list based on object `created` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
 updated | integer | A filter on the list based on object `updated` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
@@ -725,6 +746,8 @@ https://api.trycelery.com/v2/orders?created[gte]=1388534400000
             "total": 2,
             "count": 2,
             "offset": 0,
+            "page": 1,
+            "pages": 1,
             "limit": 100,
             "has_more": false
         }
@@ -1271,7 +1294,9 @@ Attributes | Type | Description
 -----------|------|------------
 sort | string | Sort by. Default is `created`.
 order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
-skip | string | Default is `0`.
+offset | string | Default is `0`.
+page | integer | Current page number.
+pages | integer | Total number of pages.
 limit | string | A limit on the number of objects to be returned. Default is `100`.
 
 
@@ -1473,7 +1498,9 @@ Attributes | Type | Description
 -----------|------|------------
 sort | string | Sort by. Default is `created`.
 order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
-skip | string | Default is `0`.
+offset | string | Default is `0`.
+page | integer | Current page number.
+pages | integer | Total number of pages.
 limit | string | A limit on the number of objects to be returned. Default is `100`.
 
 
@@ -1612,7 +1639,7 @@ Attributes | Type | Description
 -----------|------|------------
 _id | string | Coupon unique identifier.
 user_id | string | Seller unique identifier.
-type | string | Possible values: `flat`, `percent`.
+type | string | Possible values: `flat`, `percent`, `free_shipping`.
 code | string | Coupon code (must be unique).
 filter | string | Possible values: `order`, `product`.
 apply | string | Possible values: `once`, `every_item`.
@@ -1629,6 +1656,185 @@ created | integer | Unix timestamp in milliseconds.
 created_date | string | ISO 8601 timestamp.
 updated | integer | Unix timestamp in milliseconds.
 updated_date | string | ISO 8601 timestamp.
+
+
+### Retrieve a List of Coupons
+
+```
+GET /v2/coupons
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+sort | string | Sort by. Default is `created`.
+order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
+offset | string | Default is `0`.
+page | integer | Current page number.
+pages | integer | Total number of pages.
+limit | string | A limit on the number of objects to be returned. Default is `100`.
+
+##### Example Request
+```
+$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+https://api.trycelery.com/v2/coupons
+```
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200,
+        "paging": {
+            "total": 3,
+            "count": 3,
+            "limit": 100,
+            "offset": 0,
+            "page": 1,
+            "pages": 1,
+            "has_more": false
+        }
+    },
+    "data": [
+        {
+            "_id": "5488e56ffe3e2a0500b82557",
+            "type": "free_shipping",
+            "code": "93000fdb71fc",
+            "filter": "order",
+            "apply": "once",
+            "product_id": null,
+            "enabled": true,
+            "amount": 0,
+            "quantity": null,
+            "times_used": 0,
+            "order_minimum": 0,
+            "begins": 1418198400000,
+            "begins_date": "2014-12-11T00:29:35.785Z",
+            "expires": null,
+            "expires_date": null,
+            "used_emails": [],
+            "user_id": "54629b565f388707003de6ea",
+            "version": "v2",
+            "created": 1418257775785,
+            "updated": 1418257775785,
+            "created_date": "2014-12-11T00:29:35.785Z",
+            "updated_date": "2014-12-11T00:29:35.785Z",
+            "locked": false,
+            "metadata": {}
+        },
+        {
+            "_id": "5488e5689b43260400cb3d1a",
+            "type": "percent",
+            "code": "566e8816d360",
+            "filter": "order",
+            "apply": "once",
+            "product_id": null,
+            "enabled": true,
+            "amount": 20,
+            "quantity": null,
+            "times_used": 0,
+            "order_minimum": 0,
+            "begins": 1418198400000,
+            "begins_date": "2014-12-11T00:29:28.108Z",
+            "expires": null,
+            "expires_date": null,
+            "used_emails": [],
+            "user_id": "54629b565f388707003de6ea",
+            "version": "v2",
+            "created": 1418257768108,
+            "updated": 1418257768108,
+            "created_date": "2014-12-11T00:29:28.108Z",
+            "updated_date": "2014-12-11T00:29:28.108Z",
+            "locked": false,
+            "metadata": {}
+        },
+        {
+            "_id": "5488e559fe3e2a0500b82556",
+            "type": "flat",
+            "code": "94cf61c4d205",
+            "filter": "order",
+            "apply": "once",
+            "product_id": null,
+            "enabled": true,
+            "amount": 2000,
+            "quantity": null,
+            "times_used": 0,
+            "order_minimum": 0,
+            "begins": 1418198400000,
+            "begins_date": "2014-12-11T00:29:13.319Z",
+            "expires": null,
+            "expires_date": null,
+            "used_emails": [],
+            "user_id": "54629b565f388707003de6ea",
+            "version": "v2",
+            "created": 1418257753319,
+            "updated": 1418257753319,
+            "created_date": "2014-12-11T00:29:13.319Z",
+            "updated_date": "2014-12-11T00:29:13.319Z",
+            "locked": false,
+            "metadata": {}
+        }
+    ]
+}
+```
+
+
+### Retrieve a Coupon
+
+```
+GET /v2/coupons/{id}
+```
+
+##### Example Request
+```
+$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+https://api.trycelery.com/v2/coupons/{id}
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+id | string | **Required** Coupon unique identifier.
+
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200
+    },
+    "data": {
+        "type": "free_shipping",
+        "code": "93000fdb71fc",
+        "filter": "order",
+        "apply": "once",
+        "product_id": null,
+        "enabled": true,
+        "amount": 0,
+        "quantity": null,
+        "times_used": 0,
+        "order_minimum": 0,
+        "begins": 1418198400000,
+        "begins_date": "2014-12-11T00:29:35.785Z",
+        "expires": null,
+        "expires_date": null,
+        "used_emails": [],
+        "_id": "5488e56ffe3e2a0500b82557",
+        "user_id": "54629b565f388707003de6ea",
+        "version": "v2",
+        "created": 1418257775785,
+        "updated": 1418257775785,
+        "created_date": "2014-12-11T00:29:35.785Z",
+        "updated_date": "2014-12-11T00:29:35.785Z",
+        "locked": false,
+        "metadata": {}
+    }
+}
+```
 
 
 ### Validate coupon code
@@ -1653,7 +1859,8 @@ $ curl -X POST -H Content-Type:application/json \
 https://api.trycelery.com/v2/coupons/validate
 ```
 
-##### Success Example Response
+
+##### Example Response
 
 ```json
 {
