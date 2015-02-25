@@ -48,7 +48,7 @@ The base endpoint URL is `https://api.trycelery.com`. Celery is currently on ver
 GET https://api.trycelery.com/v2/orders
 ```
 
-To access the sandbox environment, the base endpoint URL is `https://api-sandbox.trycelery.com`.
+To access the sandbox environment, you will need to create a sandbox account at the base endpoint URL `https://api-sandbox.trycelery.com`.
 
 ### API Basics
 
