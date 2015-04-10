@@ -48,7 +48,7 @@ The base endpoint URL is `https://api.trycelery.com`. Celery is currently on ver
 GET https://api.trycelery.com/v2/orders
 ```
 
-To access the sandbox environment, you will need to create a sandbox account at [https://dashboard-sandbox.trycelery.com](https://dashboard-sandbox.trycelery.com). The sandbox base endpoint URL is `https://api-sandbox.trycelery.com`.
+To access the sandbox environment, create a new account at [https://dashboard-sandbox.trycelery.com](https://dashboard-sandbox.trycelery.com). The sandbox base endpoint URL is `https://api-sandbox.trycelery.com`. The sandbox environment is completely separate from production and does not use live money.
 
 ### API Basics
 
@@ -269,6 +269,8 @@ This is a public endpoint to create a new order with a credit or debit card. It 
 
 For cross-browser compatibility with older versions of Internet Explorer, we recommend using [jQuery-ajaxTransport-XDomainRequest](https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest).
 
+To place an order with a credit/debit card in the sandbox environment, please use [Stripe test cards](https://stripe.com/docs/testing).
+
 ```
 POST /v2/orders/checkout
 ```
@@ -303,6 +305,7 @@ line_items[].variant_id | string | Variant id (required if product has variants)
 line_items[].quantity | integer | Number of units ordered.
 **Payment Source** | object |
 payment_source.card.name | string | Name on credit/debit card. Stripe only.
+payment_source.card.number | string | Credit/debit card number. Stripe only.
 payment_source.card.exp_month | integer | **Required**. Expiration month of credit/debit card. Stripe only.
 payment_source.card.exp_year | integer | **Required**. Expiration year of credit/debit card. Stripe only.
 payment_source.card.cvc | string | **Required**. Credit/debit card CVC. Stripe only.
