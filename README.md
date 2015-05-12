@@ -15,6 +15,7 @@ To view `v1` API documentation, go to [https://legacy.trycelery.com/developer](h
     * [Authentication](#authentication)
     * [Errors](#errors)
     * [Pagination](#pagination)
+    * [Rate Limits] (#rate-limits)
 * [Orders Resource](#orders-resource)
     * [Checkout with Credit or Debit Card](#checkout-with-credit-or-debit-card)
     * [Checkout with PayPal](#checkout-with-paypal)
@@ -122,6 +123,9 @@ By default, requests return a limit of 100 records per page. You can change this
 
 When there are more records available than can be returned in a single page, you can paginate through them by setting the `offset` or `page`.
 
+### Rate Limits
+
+There is a default rate limit of 120 requests per minute. If for any reason this is not enough, please contact us.
 
 ## Orders Resource
 
