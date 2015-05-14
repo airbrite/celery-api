@@ -49,7 +49,7 @@ The base endpoint URL is `https://api.trycelery.com`. Celery is currently on ver
 GET https://api.trycelery.com/v2/orders
 ```
 
-To access the sandbox environment, create a new account at [https://dashboard-sandbox.trycelery.com](https://dashboard-sandbox.trycelery.com). The sandbox base endpoint URL is `https://api-sandbox.trycelery.com`. The sandbox environment is completely separate from production and does not use live money.
+To access the sandbox environment, create a new account at [https://dashboard-sandbox.trycelery.com](https://dashboard-sandbox.trycelery.com). The sandbox base endpoint URL is `https://api-sandbox.trycelery.com`. The sandbox environment is separate from production and does not use live money.
 
 ### API Basics
 
@@ -62,8 +62,6 @@ To access the sandbox environment, create a new account at [https://dashboard-sa
 Tokens are used to authenticate your requests. Your access token can be retrieved in the Celery dashboard. Endpoints require authentication over HTTPS. The preferred method is to authenticate with HTTP header:
 
     Authorization: {ACCESS_TOKEN}
-
-Alternatively, you can authenticate by adding the query string `?access_token={ACCESS_TOKEN}` to any request URL
 
 ### Errors
 
@@ -509,7 +507,7 @@ id | string | **Required**. Order unique identifier.
 
 ##### Example Request
 ```
-$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X GET -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440
 ```
 
@@ -714,7 +712,6 @@ sort | string | Sort by. Default is `created`.
 order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
 offset | string | Default is `0`.
 page | integer | Current page number.
-pages | integer | Total number of pages.
 limit | string | A limit on the number of objects to be returned. Default is `100`.
 created | integer | A filter on the list based on object `created` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
 updated | integer | A filter on the list based on object `updated` field. The value can be a string with an integer timestamp (in ms), or it can be a dictionary with the following options: `gt`, `gte`, `lt`, `lte`.
@@ -742,7 +739,7 @@ If I wanted to query for orders purchased by `Brian Nguyen`, my query string wou
 
 ##### Example Request
 ```
-$ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X POST -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders?created[gte]=1388534400000
 ```
 
@@ -809,7 +806,7 @@ If I wanted to count how many orders include the product with id `531e0b012cf976
 
 ##### Example Request
 ```
-$ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X POST -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders/count?created[gte]=1388534400000
 ```
 
@@ -864,7 +861,7 @@ line_items[].quantity | integer | Number of units ordered.
 This example request updates both the buyer and shipping_address information.
 
 ```
-$ curl -X PUT -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X PUT -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
 -d'
 {
@@ -930,7 +927,7 @@ This example request updates the quantity of a line item to 2 units. Please be s
 WARNING: Updating line items will fetch the latest product details and may cause order prices (subtotal, taxes, shipping, total, balance) to change.
 
 ```
-$ curl -X PUT -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X PUT -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440 \
 -d'
 {
@@ -990,7 +987,7 @@ id | string | **Required**. Order unique identifier.
 
 ##### Example Request
 ```
-$ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X POST -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/order_cancel
 ```
 
@@ -1039,7 +1036,7 @@ id | string | **Required**. Order unique identifier.
 ##### Example Request
 
 ```
-$ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X POST -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders/53c389b7eba65a000061e12f/payment_charge
 ```
 
@@ -1118,7 +1115,7 @@ id | string | **Required**. Order unique identifier.
 
 ##### Example Request
 ```
-$ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X POST -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders/53c389b7eba65a000061e12f/payment_refund
 ```
 
@@ -1209,7 +1206,7 @@ serial_numbers | [string] | Serial numbers associated with the order.
 ##### Example Request
 
 ```
-$ curl -X POST -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X POST -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/orders/530ec58358b6ee0000f5d440/fulfillment_succeed \
 -d'
 {
@@ -1305,14 +1302,13 @@ sort | string | Sort by. Default is `created`.
 order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
 offset | string | Default is `0`.
 page | integer | Current page number.
-pages | integer | Total number of pages.
 limit | string | A limit on the number of objects to be returned. Default is `100`.
 
 
 ##### Example Request
 
 ```
-$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X GET -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/products
 ```
 
@@ -1436,7 +1432,7 @@ id | string | **Required**. Product unique identifier.
 
 ##### Example Request
 ```
-$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X GET -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/products/546540f2793b4c050015d96c
 ```
 
@@ -1509,13 +1505,12 @@ sort | string | Sort by. Default is `created`.
 order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
 offset | string | Default is `0`.
 page | integer | Current page number.
-pages | integer | Total number of pages.
 limit | string | A limit on the number of objects to be returned. Default is `100`.
 
 
 ##### Example Request
 ```
-$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X GET -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/collections
 ```
 
@@ -1596,7 +1591,7 @@ GET /v2/collections/{id}
 
 ##### Example Request
 ```
-$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X GET -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/collections/{id}
 ```
 
@@ -1681,12 +1676,11 @@ sort | string | Sort by. Default is `created`.
 order | string | Order by. Default is `desc`. Possible values: `desc`, `asc`.
 offset | string | Default is `0`.
 page | integer | Current page number.
-pages | integer | Total number of pages.
 limit | string | A limit on the number of objects to be returned. Default is `100`.
 
 ##### Example Request
 ```
-$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X GET -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/coupons
 ```
 
@@ -1798,7 +1792,7 @@ GET /v2/coupons/{id}
 
 ##### Example Request
 ```
-$ curl -X GET -H Content-Type:application/json -H Authorization:{{ACCESS_TOKEN}} \
+$ curl -X GET -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
 https://api.trycelery.com/v2/coupons/{id}
 ```
 
