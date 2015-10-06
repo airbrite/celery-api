@@ -1854,7 +1854,9 @@ Attributes | Type | Description
 -----------|------|------------
 user_id | string | **Required**. Seller unique identifier.
 code | string | **Required**. Coupon code to validate.
-line_items | [string] | List of product ids to validate against product-specific coupons.
+**Line Items** | [object] |
+line_items[].product_id | string | Product id to validate against product-specific coupons.
+
 
 ##### Example Request
 ```
