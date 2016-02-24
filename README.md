@@ -1643,10 +1643,11 @@ Attributes | Type | Description
 -----------|------|------------
 _id | string | Coupon unique identifier.
 user_id | string | Seller unique identifier.
-type | string | Possible values: `flat`, `percent`, `free_shipping`.
+type | string | Possible values: `flat`, `percent`.
 code | string | Coupon code (must be unique).
 filter | string | Possible values: `order`, `product`.
 apply | string | Possible values: `once`, `every_item`.
+free_shipping | boolean | Possible values: `true`, `false`.
 product_id | string | Product id for product-specific coupons.
 enabled | boolean | Whether coupon is valid.
 amount | integer | Coupon amount. $5 should be 500 (prices in cents). 10% should be 10.
@@ -1702,37 +1703,12 @@ https://api.trycelery.com/v2/coupons
     },
     "data": [
         {
-            "_id": "5488e56ffe3e2a0500b82557",
-            "type": "free_shipping",
-            "code": "93000fdb71fc",
-            "filter": "order",
-            "apply": "once",
-            "product_id": null,
-            "enabled": true,
-            "amount": 0,
-            "quantity": null,
-            "times_used": 0,
-            "order_minimum": 0,
-            "begins": 1418198400000,
-            "begins_date": "2014-12-11T00:29:35.785Z",
-            "expires": null,
-            "expires_date": null,
-            "used_emails": [],
-            "user_id": "54629b565f388707003de6ea",
-            "version": "v2",
-            "created": 1418257775785,
-            "updated": 1418257775785,
-            "created_date": "2014-12-11T00:29:35.785Z",
-            "updated_date": "2014-12-11T00:29:35.785Z",
-            "locked": false,
-            "metadata": {}
-        },
-        {
             "_id": "5488e5689b43260400cb3d1a",
             "type": "percent",
             "code": "566e8816d360",
             "filter": "order",
             "apply": "once",
+            "free_shipping": false,
             "product_id": null,
             "enabled": true,
             "amount": 20,
@@ -1759,6 +1735,7 @@ https://api.trycelery.com/v2/coupons
             "code": "94cf61c4d205",
             "filter": "order",
             "apply": "once",
+            "free_shipping": false,
             "product_id": null,
             "enabled": true,
             "amount": 2000,
@@ -1811,10 +1788,11 @@ id | string | **Required** Coupon unique identifier.
         "code": 200
     },
     "data": {
-        "type": "free_shipping",
+        "type": "flat",
         "code": "93000fdb71fc",
         "filter": "order",
         "apply": "once",
+        "free_shipping": true,
         "product_id": null,
         "enabled": true,
         "amount": 0,
@@ -1877,6 +1855,7 @@ https://api.trycelery.com/v2/coupons/validate
         "code": "036dabee2bd3",
         "filter": "order",
         "apply": "once",
+        "free_shipping": false,
         "product_id": null,
         "enabled": true,
         "amount": 10000,
