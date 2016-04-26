@@ -34,6 +34,7 @@ To view `v1` API documentation, go to [https://legacy.trycelery.com/developer](h
     * [Retrieve a List of Collections](#retrieve-a-list-of-collections)
     * [Retrieve a Collection](#retrieve-a-collection)
 * [Coupons Resource](#coupons-resource)
+    * [Create a Coupon](#create-a-coupon)
     * [Retrieve a List of Coupons](#retrieve-a-list-of-coupons)
     * [Retrieve a Coupon](#retrieve-a-coupon)
     * [Validate Coupon Code](#validate-coupon-code)
@@ -1650,7 +1651,8 @@ apply | string | Possible values: `once`, `every_item`.
 free_shipping | boolean | Possible values: `true`, `false`.
 product_id | string | Product id for product-specific coupons.
 enabled | boolean | Whether coupon is valid.
-amount | integer | Coupon amount. $5 should be 500 (prices in cents). 10% should be 10.
+amount | integer | Coupon amount. $5 should be `500` (prices in cents). 10% should be `10`.
+quantity | integer | How many times coupon can be redeemed. (`null` or `undefined` represents unlimited usage)
 times_used | integer | Number of times coupon was redeemed.
 begins | integer | Coupon begin date. Unix timestamp in milliseconds.
 begins_date | string | Coupon begin date. ISO 8601 timestamp.
@@ -1661,6 +1663,84 @@ created | integer | Unix timestamp in milliseconds.
 created_date | string | ISO 8601 timestamp.
 updated | integer | Unix timestamp in milliseconds.
 updated_date | string | ISO 8601 timestamp.
+
+
+### Create a Coupon
+
+```
+POST /v2/coupons
+```
+
+##### Arguments
+
+Attributes | Type | Description
+-----------|------|------------
+type | string | **Required** Possible values: `flat`, `percent`.
+code | string | **Required** Coupon code (must be unique).
+filter | string | **Required** Possible values: `order`, `product`.
+apply | string | **Required** Possible values: `once`, `every_item`.
+product_id | string | Product id for product-specific coupons.
+enabled | boolean | Whether coupon is valid. Defaults to `true`.
+free_shipping | boolean | **Required** Possible values: `true`, `false`.
+amount | integer | **Required** Coupon amount. $5 should be `500` (prices in cents). 10% should be `10`.
+quantity | integer | How many times coupon can be redeemed. (`null` or `undefined` represents unlimited usage)
+begins | integer | Coupon begin date. Unix timestamp in milliseconds.
+expires | integer | Coupon expiration date. Unix timestamp in milliseconds.
+
+
+##### Example Request
+```
+$ curl -X POST -H Content-Type:application/json -H Authorization:{ACCESS_TOKEN} \
+https://api.trycelery.com/v2/coupons
+-d'
+{
+    "type": "flat",
+    "code": "15off-1",
+    "filter": "flat",
+    "free_shipping": false,
+    "amount": 1500,
+    "expired": 1461705000000
+}
+```
+
+##### Example Response
+
+```json
+{
+    "meta": {
+        "code": 200,
+    },
+    "data": [
+        {
+          "_id": "571fd4b900598e208992eed8",
+          "version": "v2",
+          "created": 1461703865552,
+          "updated": 1461703865556,
+          "created_date": "2016-04-26T20:51:05.552Z",
+          "updated_date": "2016-04-26T20:51:05.556Z",
+          "locked": false,
+          "metadata": {},
+          "user_id": "514a114080feb60200000001",
+          "type": "flat",
+          "code": "15off-1",
+          "filter": "order",
+          "apply": "once",
+          "product_id": null,
+          "enabled": true,
+          "free_shipping": false,
+          "amount": 1500,
+          "quantity": null,
+          "times_used": 0,
+          "order_minimum": 0,
+          "begins": 1461703865552,
+          "begins_date": "2016-04-26T20:51:05.552Z",
+          "expires": 1461705000000,
+          "expires_date": null,
+          "used_emails": []
+        }
+    ]
+}
+```
 
 
 ### Retrieve a List of Coupons
@@ -1840,6 +1920,16 @@ line_items[].product_id | string | Product id to validate against product-specif
 ```
 $ curl -X POST -H Content-Type:application/json \
 https://api.trycelery.com/v2/coupons/validate
+-d'
+{
+    "user_id": "514a114080feb60200000001",
+    "code": "036dabee2bd3",
+    "line_items": [
+        {
+            "product_id": null
+        }
+    ]
+}
 ```
 
 
