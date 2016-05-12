@@ -294,6 +294,7 @@ buyer.notes | string | Buyer notes to the seller.
 **Shipping Address** |object|
 shipping_address.first_name | string | Shipping address first name.
 shipping_address.last_name | string | Shipping address last name.
+shipping_address.name | string | Shipping address full name.
 shipping_address.company | string | Shipping address company name.
 shipping_address.line1 | string | Shipping address street address.
 shipping_address.line2 | string | Shipping address building, apartment, unit, etc.
@@ -302,6 +303,16 @@ shipping_address.state | string | Shipping address state, province, or region. I
 shipping_address.zip | string | Shipping address ZIP or postal code.
 shipping_address.country | string | Shipping address 2-letter ISO country code (lowercase).
 shipping_address.phone | string | Shipping address phone number.
+**Billing Address** |object|
+billing_address.first_name | string | Billing address first name.
+billing_address.last_name | string | Billing address last name.
+billing_address.line1 | string | Billing address street address.
+billing_address.line2 | string | Billing address building, apartment, unit, etc.
+billing_address.city | string | Billing address city.
+billing_address.state | string | Billing address state, province, or region. If country US or CA, use 2-letter ISO state code (lowercase).
+billing_address.zip | string | Billing address ZIP or postal code.
+billing_address.country | string | Billing address 2-letter ISO country code (lowercase).
+billing_address.phone | string | Billing address phone number.
 **Line Items** | [objects] |
 line_items[].product_id | string | **Required**. Product id.
 line_items[].variant_id | string | Variant id (required if product has variants).
@@ -336,6 +347,17 @@ https://api.trycelery.com/v2/orders/checkout \
         "city": "New York",
         "state": "ny",
         "zip": "10012",
+        "country": "us",
+        "phone": "555-555-5555"
+    },
+    "billing_address": {
+        "first_name": "First",
+        "last_name": "Last",
+        "line1": "123 Main Street",
+        "line2": null,
+        "city": "San Francisco",
+        "state": "ca",
+        "zip": "94105",
         "country": "us",
         "phone": "555-555-5555"
     },
