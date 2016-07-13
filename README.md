@@ -1674,7 +1674,7 @@ free_shipping | boolean | Possible values: `true`, `false`.
 product_id | string | Product id for product-specific coupons.
 enabled | boolean | Whether coupon is valid.
 amount | integer | Coupon amount. $5 should be `500` (prices in cents). 10% should be `10`.
-order_minimum | integer | Minimum order amount before coupon can be applied (amount in cents). Filter must be set to `order_with_minimum`.
+order_minimum | integer | Minimum line item amount before coupon can be applied (amount in cents). Filter must be set to `order_with_minimum`.
 quantity | integer | How many times coupon can be redeemed. (`null` or `undefined` represents unlimited usage)
 times_used | integer | Number of times coupon was redeemed.
 begins | integer | Coupon begin date. Unix timestamp in milliseconds.
@@ -1700,12 +1700,13 @@ Attributes | Type | Description
 -----------|------|------------
 type | string | **Required** Possible values: `flat`, `percent`.
 code | string | **Required** Coupon code (must be unique).
-filter | string | **Required** Possible values: `order`, `product`.
+filter | string | **Required** Possible values: `order`, order_with_minimum, `product`.
 apply | string | **Required** Possible values: `once`, `every_item`.
 product_id | string | Product id for product-specific coupons.
 enabled | boolean | Whether coupon is valid. Defaults to `true`.
 free_shipping | boolean | **Required** Possible values: `true`, `false`.
 amount | integer | **Required** Coupon amount. $5 should be `500` (prices in cents). 10% should be `10`.
+order_minimum | integer | Minimum line item amount before coupon can be applied (amount in cents). Filter must be set to `order_with_minimum`.
 quantity | integer | How many times coupon can be redeemed. (`null` or `undefined` represents unlimited usage)
 begins | integer | Coupon begin date. Unix timestamp in milliseconds.
 expires | integer | Coupon expiration date. Unix timestamp in milliseconds.
