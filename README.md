@@ -1668,12 +1668,13 @@ _id | string | Coupon unique identifier.
 user_id | string | Seller unique identifier.
 type | string | Possible values: `flat`, `percent`.
 code | string | Coupon code (must be unique).
-filter | string | Possible values: `order`, `product`.
+filter | string | Possible values: `order`, `order_with_minimum`, `product`.
 apply | string | Possible values: `once`, `every_item`.
 free_shipping | boolean | Possible values: `true`, `false`.
 product_id | string | Product id for product-specific coupons.
 enabled | boolean | Whether coupon is valid.
 amount | integer | Coupon amount. $5 should be `500` (prices in cents). 10% should be `10`.
+order_minimum | integer | Minimum order amount before coupon can be applied (amount in cents). Filter must be set to `order_with_minimum`.
 quantity | integer | How many times coupon can be redeemed. (`null` or `undefined` represents unlimited usage)
 times_used | integer | Number of times coupon was redeemed.
 begins | integer | Coupon begin date. Unix timestamp in milliseconds.
