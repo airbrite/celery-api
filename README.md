@@ -1734,35 +1734,33 @@ https://api.trycelery.com/v2/coupons
     "meta": {
         "code": 200,
     },
-    "data": [
-        {
-          "_id": "571fd4b900598e208992eed8",
-          "version": "v2",
-          "created": 1461703865552,
-          "updated": 1461703865556,
-          "created_date": "2016-04-26T20:51:05.552Z",
-          "updated_date": "2016-04-26T20:51:05.556Z",
-          "locked": false,
-          "metadata": {},
-          "user_id": "514a114080feb60200000001",
-          "type": "flat",
-          "code": "15off-1",
-          "filter": "order",
-          "apply": "once",
-          "product_id": null,
-          "enabled": true,
-          "free_shipping": false,
-          "amount": 1500,
-          "quantity": null,
-          "times_used": 0,
-          "order_minimum": 0,
-          "begins": 1461703865552,
-          "begins_date": "2016-04-26T20:51:05.552Z",
-          "expires": 1461705000000,
-          "expires_date": null,
-          "used_emails": []
-        }
-    ]
+    "data": {
+        "_id": "571fd4b900598e208992eed8",
+        "version": "v2",
+        "created": 1461703865552,
+        "updated": 1461703865556,
+        "created_date": "2016-04-26T20:51:05.552Z",
+        "updated_date": "2016-04-26T20:51:05.556Z",
+        "locked": false,
+        "metadata": {},
+        "user_id": "514a114080feb60200000001",
+        "type": "flat",
+        "code": "15off-1",
+        "filter": "order",
+        "apply": "once",
+        "product_id": null,
+        "enabled": true,
+        "free_shipping": false,
+        "amount": 1500,
+        "quantity": null,
+        "times_used": 0,
+        "order_minimum": 0,
+        "begins": 1461703865552,
+        "begins_date": "2016-04-26T20:51:05.552Z",
+        "expires": 1461705000000,
+        "expires_date": null,
+        "used_emails": []
+    }
 }
 ```
 
