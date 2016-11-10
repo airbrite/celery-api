@@ -2050,7 +2050,7 @@ https://api.trycelery.com/v2/users/530ec58358b6ee0000f5d440/tax_rates?shipping_c
 
 ## Webhooks
 
-Events are our way of letting you know about something interesting has happened with your order. The Celery API can send events directly to your server using webhooks. Please contact Celery if you would like to implement webhooks.
+Events are our way of letting you know about something interesting has happened with your order. The Celery API can send events directly to your server using webhooks.
 
 To acknowledge that you received the webhook without any problem, your server should return a 200 HTTP status code. Any response code outside the 2xx and 3xx range will indicate to Celery that you did not receive the webhook. When a webhook is not received for whatever reason, Celery will continue trying to send the webhook for up to 3 times.
 
@@ -2063,6 +2063,7 @@ This is a list of all the types of events we currently send. We may add more at 
 * order.shipping_address.updated
 * order.adjustments.updated
 * order.payment_source.updated
+* order.notes.updated
 * order.charge.succeeded
 * order.charge.failed
 * order.refund.succeeded
